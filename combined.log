@@ -1,0 +1,132 @@
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: User creation failed: E11000 duplicate key error collection: Form-Data.users index: email_1 dup key: { email: "palavalliharitha@gmail.com" }
+info: User Created: palavalliharitha@gmail.com
+error: User creation failed: E11000 duplicate key error collection: Form-Data.users index: email_1 dup key: { email: "palavalliharitha@gmail.com" }
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: User creation failed: Baby is not defined
+error: User creation failed: Baby is not defined
+error: User creation failed: Baby is not defined
+error: User creation failed: Baby is not defined
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: Cannot set headers after they are sent to the client {"code":"ERR_HTTP_HEADERS_SENT"}
+error: Cannot set headers after they are sent to the client {"code":"ERR_HTTP_HEADERS_SENT"}
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: palavalliharitha@gmail.com
+info: User Created: palavalliharitha@gmail.com
+info: User Created: itsmesudheer45@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: itsmesudheer45@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: User creation failed: Cast to Number failed for value "987644390y" (type string) at path "mobile" for model "User"
+error: User creation failed: Cast to Number failed for value "987644390y" (type string) at path "mobile" for model "User"
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: itsmesudheer45@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: User creation failed: User validation failed: experienceRange: Path `experienceRange` is required., role: Path `role` is required., currentDesignation: Path `currentDesignation` is required.
+error: User creation failed: User validation failed: experienceRange: Path `experienceRange` is required., role: Path `role` is required., currentDesignation: Path `currentDesignation` is required.
+error: User creation failed: User validation failed: experienceRange: Path `experienceRange` is required., role: Path `role` is required., currentDesignation: Path `currentDesignation` is required., keySkills.0: Path `keySkills.0` is required.
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: User Created: palavalliharitha@gmail.com
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
