@@ -21,6 +21,20 @@ const userValidationRules = [
     .isEmail()
     .withMessage('Valid email required'),
 
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required')
+    .isLength({min:8})
+    .withMessage('Password must be atleast 8 characters long')
+    .matches(/[A-Z]/)
+    .withMessage('Password must include atleast one uppercase letter')
+    .matches(/[a-z]/)
+    .withMessage('Password must include atleast one lowercase letter')
+    .matches(/\d/)
+    .withMessage('Password must include atleast one number')
+    .matches(/[!@#$%^&*(),.?:{}|<>]/)
+    .withMessage('Password must include atleast one special character'),
+
   body('mobile')
     .notEmpty()
     .withMessage('Mobile number is required')

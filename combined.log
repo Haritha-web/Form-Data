@@ -130,3 +130,50 @@ info: MongoDB Connected and running Successfully
 info: PDF downloaded for user: palavalliharitha@gmail.com
 info: Server started and running at 5000
 info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: palavalliharitha@gmail.com
+info: Server started and running at 5000
+error: bad auth : authentication failed {"code":8000,"codeName":"AtlasError","connectionGeneration":0,"errorLabelSet":{},"errorResponse":{"code":8000,"codeName":"AtlasError","errmsg":"bad auth : authentication failed","ok":0},"ok":0}
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: User creation failed: data and salt arguments required
+info: User Created: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: Login error: jwt is not defined
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: Login error: secretOrPrivateKey must have a value
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: palavalliharitha@gmail.com
