@@ -14,10 +14,6 @@ const userSchema = new mongoose.Schema({
     required: true, 
     unique: true 
 },
- password: {
-  type: String,
-  required: true
-},
   mobile: {
     type: Number,
     required: true,
@@ -40,8 +36,17 @@ const userSchema = new mongoose.Schema({
     type: Number, 
     required: true 
 },
-image: {
+  image: {
     type: String,
+},
+  resume: {
+    type: String,
+    required: true
+},
+category: {
+  type: String,
+  required: true,
+  enum: ['designer', 'developer', 'printer', 'other'] // example categories
 },
 experienceRange: {
     type: String,

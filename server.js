@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotEnv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
+import vendorRoutes from './routes/vendorRoutes.js';
 import logger from './utils/loggers.js';
 import path from 'path';
 
@@ -20,8 +21,11 @@ mongoose.connect(process.env.MONGO_URI)
     logger.error(err)
 });
 
-// Routes
+// User Routes
 app.use('/user', userRoutes);
+
+// Vendor Routes
+app.use('/vendor', vendorRoutes);
 
 //Server Uploads images
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));

@@ -3,11 +3,9 @@ import logger from '../utils/loggers.js';
 import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
 const createUser = async (req, res) => {
-  const { firstName, lastName, email,password, mobile, gender, dob, lati, longi, experienceRange, keySkills, role, currentDesignation, platform, model, os_version } = req.body;
+  const { firstName, lastName, email, mobile, gender, dob, lati, longi, category, experienceRange, keySkills, role, currentDesignation, platform, model, os_version } = req.body;
 
   try {
     const emailExists = await User.findOne({ email });
@@ -16,25 +14,33 @@ const createUser = async (req, res) => {
     const mobileExists = await User.findOne({ mobile });
     if (mobileExists) return res.status(400).send({ message: 'Mobile Number already exists' });
 
-    if (!req.file) return res.status(400).json({ message: 'Image is required' });
+    if (!req.files || !req.files['image'] || req.files['image'].length === 0) {
+      return res.status(400).json({ message: 'Image is required' });
+    }
+    if (!req.files['resume'] || req.files['resume'].length === 0) {
+      return res.status(400).json({ message: 'Resume is required' });
+    }
 
-    // Create full URL path
-    const imageUrl = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
+    // Get actual filenames from files array
+    const imageFile = req.files["image"][0];
+    const resumeFile = req.files["resume"][0];
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Construct URL using filename
+    const imageUrl = `${process.env.BASE_URL}/uploads/${imageFile.filename}`;
+    const resumeUrl = `${process.env.BASE_URL}/uploads/${resumeFile.filename}`;
 
     const user = new User({ 
         firstName, 
         lastName, 
         email,
-        password: hashedPassword,
         mobile,
         gender, 
         dob, 
         lati, 
         longi, 
         image: imageUrl,
+        resume: resumeUrl,
+        category,
         experienceRange,
         keySkills,
         role,
@@ -77,6 +83,7 @@ const downloadExcel = async (req, res) => {
     { header: 'Latitude', key: 'lati' },
     { header: 'Longitude', key: 'longi' },
     { header: 'Image Path', key: 'image' },
+    { header: 'Category', key: 'category'},
     { header: 'Experience Range', key: 'experienceRange' },
     { header: 'Key Skills', key: 'keySkills' },
     { header: 'Role', key: 'role' },
@@ -117,6 +124,7 @@ const downloadExcel = async (req, res) => {
       Gender: ${user.gender}
       DOB: ${user.dob.toISOString().split('T')[0]}
       Location: (${user.lati}, ${user.longi})
+      Category: ${user.category}
       Experience Range: ${user.experienceRange}
       Key Skills: ${user.keySkills}
       Role: ${user.role}
@@ -184,37 +192,10 @@ const downloadUserPDF = async (req, res) => {
   }
 };
 
-const loginWithEmail = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.findOne({ email });
-    if (!user)
-      return res.status(404).json({ message: 'User not found with this email' });
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ message: 'Incorrect password' });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
-    });
-
-    res.status(200).json({
-      message: 'Login successful',
-      token,
-    });
-  } catch (err) {
-    logger.error(`Login error: ${err.message}`);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
 export {
     createUser,
     getUsers,
     downloadExcel,
     downloadPDF,
-    downloadUserPDF,
-    loginWithEmail
+    downloadUserPDF
 };

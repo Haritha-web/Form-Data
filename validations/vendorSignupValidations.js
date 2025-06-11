@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator';
 
-const userValidationRules = [
+const vendorValidationRules = [
   body('firstName')
     .notEmpty()
     .withMessage('First name is required')
@@ -53,56 +53,7 @@ const userValidationRules = [
     .isISO8601()
     .toDate()
     .withMessage('Valid DOB required'),
-
-  body('lati')
-    .notEmpty()
-    .withMessage('Latitude is required')
-    .isFloat({ min: -90, max: 90 })
-    .withMessage('Latitude must be valid'),
-
-  body('longi')
-    .notEmpty()
-    .withMessage('Longitude is required')
-    .isFloat({ min: -180, max: 180 })
-    .withMessage('Longitude must be valid'),
-    
-  body('experienceRange')
-    .notEmpty()
-    .withMessage('Experience Range is required')
-    .isIn(['0-1', '1-2', '2-3', '3-4', '4-5', '5+'])
-    .withMessage('Invalid experience range'),
-    
-  body('keySkills')
-    .notEmpty()
-    .withMessage('Key Skills is required')
-    .isArray({ min: 1 })
-    .withMessage('At least one key skill is required')
-    .custom(skills => skills.every(skill => typeof skill === 'string')).withMessage('All key skills must be strings'),
-    
-  body('role')
-    .notEmpty()
-    .withMessage('Role is required')
-    .isString().withMessage('Role must be a string')
-    .isLength({ min: 2 }).withMessage('Role must be at least 2 characters'),
-
-  body('currentDesignation')
-    .notEmpty()
-    .withMessage('Current Designation is required')
-    .isString().withMessage('Current designation must be a string')
-    .isLength({ min: 2 }).withMessage('Designation must be at least 2 characters'),
-
-  body('platform')
-    .optional()
-    .isString().withMessage('Platform must be a string'),
-
-  body('model')
-    .optional()
-    .isString().withMessage('Model must be a string'),
-
-  body('os_version')
-    .optional()
-    .isString().withMessage('OS version must be a string'),
-    async (req, res, next) => {
+    (req,res,next)=>{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
             const firstError = errors.array()[0]
@@ -113,5 +64,5 @@ const userValidationRules = [
 ];
 
 export {
-     userValidationRules
+     vendorValidationRules
 };

@@ -1,8 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import { createUser, getUsers, downloadExcel, downloadPDF, downloadUserPDF, loginWithEmail } from '../controllers/userController.js';
-import { userValidationRules } from '../validations/userValidations.js';
-import loginValidation from '../validations/loginVlidations.js';
+import { createUser, getUsers, downloadExcel, downloadPDF, downloadUserPDF } from '../controllers/userController.js';
+import { userValidationRules, resumeValidator } from '../validations/UserSignupValidations.js';
 
 const router = express.Router();
 
@@ -15,10 +14,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Create User
-router.post('/create', upload.single('image'), userValidationRules, createUser);
+// Handle multiple fields (image and resume)
+const uploadFields = upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'resume', maxCount: 1 }
+]);
 
-router.post('/login-email',loginValidation, loginWithEmail);
+// Create User
+router.post('/create', uploadFields, resumeValidator, userValidationRules, createUser);
 
 // Fetch All Users
 router.get('/', getUsers);
