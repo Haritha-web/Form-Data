@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator';
 
-const userValidationRules = [
+const userSignupValidationRules = [
   body('firstName')
     .notEmpty()
     .withMessage('First name is required')
@@ -117,6 +117,6 @@ const resumeValidator = (req, res, next) => {
 };
 
 export {
-     userValidationRules,
+     userSignupValidationRules,
      resumeValidator
 };
