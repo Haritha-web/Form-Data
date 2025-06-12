@@ -1,11 +1,14 @@
 import User from '../models/User.js';
 import logger from '../utils/loggers.js';
 import ExcelJS from 'exceljs';
+import bcrypt from 'bcrypt';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
+import nodemailer from'nodemailer';
 
 const createUser = async (req, res) => {
-  const { firstName, lastName, email, mobile, gender, dob, lati, longi, category, experienceRange, keySkills, role, currentDesignation, platform, model, os_version } = req.body;
+  const { firstName, lastName, email, password, mobile, gender, dob, lati, longi, category, experienceRange, keySkills, role, currentDesignation, platform, model, os_version } = req.body;
 
   try {
     const emailExists = await User.findOne({ email });
@@ -29,10 +32,14 @@ const createUser = async (req, res) => {
     const imageUrl = `${process.env.BASE_URL}/uploads/${imageFile.filename}`;
     const resumeUrl = `${process.env.BASE_URL}/uploads/${resumeFile.filename}`;
 
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = new User({ 
         firstName, 
         lastName, 
         email,
+        password: hashedPassword,
         mobile,
         gender, 
         dob, 
@@ -64,6 +71,103 @@ const getUsers = async (req, res) => {
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: 'User not found with this email' });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(400).json({ message: 'Incorrect password' });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1d',
+    });
+
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+    });
+  } catch (err) {
+    logger.error(`Login error: ${err.message}`);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const sendUserOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+    const otpExpire = Date.now() + 10 * 60 * 1000; // 10 min expiry
+
+    // Update user with OTP and expiry
+    user.otp = otp;
+    user.otpExpire = otpExpire;
+    await user.save();
+
+    // Send OTP via email (direct in controller)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const html = `<p>Your OTP for password reset is <b>${otp}</b>. It is valid for 10 minutes.</p>`;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset OTP',
+      html,
+    });
+
+    res.json({ message: 'OTP sent to email successfully' });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Error sending OTP', error: err.message });
+  }
+};
+
+// Reset password using email + OTP + new password
+const resetUserPasswordWithOtp = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({
+      email,
+      otp,
+      otpExpire: { $gt: Date.now() }, // valid only if not expired
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+
+    // Clear OTP
+    user.otp = undefined;
+    user.otpExpire = undefined;
+
+    await user.save();
+
+    res.json({ message: 'Password reset successful' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error resetting password', error: err.message });
   }
 };
 
@@ -195,6 +299,9 @@ const downloadUserPDF = async (req, res) => {
 export {
     createUser,
     getUsers,
+    loginUser,
+    sendUserOtp,
+    resetUserPasswordWithOtp,
     downloadExcel,
     downloadPDF,
     downloadUserPDF

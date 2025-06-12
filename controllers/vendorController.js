@@ -2,6 +2,7 @@ import Vendor from '../models/Vendor.js';
 import logger from '../utils/loggers.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 
 const createVendor = async (req, res) => {
   const { firstName, lastName, email,password, mobile, gender, dob } = req.body;
@@ -69,8 +70,83 @@ const loginVendor = async (req, res) => {
   }
 };
 
+// Send OTP to vendor email
+const sendVendorOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    const vendor = await Vendor.findOne({ email });
+    if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+    const otpExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    // Save OTP to vendor record
+    vendor.otp = otp;
+    vendor.otpExpire = otpExpire;
+    await vendor.save();
+
+    // Email setup
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const html = `<p>Your OTP for password reset is <b>${otp}</b>. It is valid for 10 minutes.</p>`;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Vendor Password Reset OTP',
+      html,
+    });
+
+    res.json({ message: 'OTP sent to vendor email successfully' });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Error sending OTP', error: err.message });
+  }
+};
+
+// Reset vendor password using OTP
+const resetVendorPasswordWithOtp = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  try {
+    const vendor = await Vendor.findOne({
+      email,
+      otp,
+      otpExpire: { $gt: Date.now() },
+    });
+
+    if (!vendor) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // Hash and update new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    vendor.password = hashedPassword;
+
+    // Clear OTP
+    vendor.otp = undefined;
+    vendor.otpExpire = undefined;
+
+    await vendor.save();
+
+    res.json({ message: 'Vendor password reset successful' });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Error resetting password', error: err.message });
+  }
+};
+
 export {
     createVendor,
     getVendors,
-    loginVendor
+    loginVendor,
+    sendVendorOtp,
+    resetVendorPasswordWithOtp
 };

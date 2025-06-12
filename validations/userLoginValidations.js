@@ -1,6 +1,6 @@
 import { body,validationResult } from 'express-validator';
 
-const vendorLoginValidations = [
+const userLoginValidations = [
     body('email')
         .isEmail()
         .withMessage('Invalid email format'),
@@ -19,4 +19,4 @@ const vendorLoginValidations = [
         },
 ];
 
-export default vendorLoginValidations;
+export default userLoginValidations;

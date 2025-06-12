@@ -10,7 +10,8 @@ dotEnv.config()
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(express.json());  // For JSON body
+app.use(express.urlencoded({extended: true}));  // For form-urlencoded or form-data
 
 // DB Connection
 mongoose.connect(process.env.MONGO_URI)

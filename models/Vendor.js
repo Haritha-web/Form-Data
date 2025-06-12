@@ -32,6 +32,12 @@ const vendorSchema = new mongoose.Schema({
     type: Date, 
     required: true 
 },
+otp: {
+  type: String
+},
+otpExpire: {
+  type: Date
+}
 }, { timestamps: true });
 
 export default mongoose.model('Vendor', vendorSchema);

@@ -1,7 +1,8 @@
 import express from 'express';
 import multer from 'multer';
-import { createUser, getUsers, downloadExcel, downloadPDF, downloadUserPDF } from '../controllers/userController.js';
-import { userValidationRules, resumeValidator } from '../validations/UserSignupValidations.js';
+import { createUser, getUsers, downloadExcel, downloadPDF, downloadUserPDF, loginUser, sendUserOtp, resetUserPasswordWithOtp} from '../controllers/userController.js';
+import { userValidationRules, resumeValidator } from '../validations/userSignupValidations.js';
+import userLoginValidations from '../validations/userLoginValidations.js';
 
 const router = express.Router();
 
@@ -25,6 +26,12 @@ router.post('/create', uploadFields, resumeValidator, userValidationRules, creat
 
 // Fetch All Users
 router.get('/', getUsers);
+
+// Login User
+router.post('/login', userLoginValidations, loginUser);
+
+router.post('/forgot-password', sendUserOtp);
+router.post('/reset-password', resetUserPasswordWithOtp);
 
 // Download Excel
 router.get('/download/excel', downloadExcel);

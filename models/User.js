@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
     required: true, 
     unique: true 
 },
+  password: {
+  type: String,
+  required: true
+},
   mobile: {
     type: Number,
     required: true,
@@ -74,6 +78,12 @@ model: {
 os_version: {
     type: String         // e.g., "Android 13"      
 },
+otp: {
+  type: String
+},
+otpExpire: {
+  type: Date
+}
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);
