@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator';
 
-const userSignupValidationRules = [
+const userSignupValidations = [
   body('firstName')
     .notEmpty()
     .withMessage('First name is required')
@@ -42,27 +42,19 @@ const userSignupValidationRules = [
     .withMessage('Invalid phone number. Must be 10 digits starting with 6.'),
 
   body('gender')
-    .notEmpty()
-    .withMessage('Gender is required')
     .isIn(['Male', 'Female', 'Other'])
     .withMessage('Invalid gender'),
 
   body('dob')
-    .notEmpty()
-    .withMessage('Date of Birth is required')
     .isISO8601()
     .toDate()
     .withMessage('Valid DOB required'),
 
   body('lati')
-    .notEmpty()
-    .withMessage('Latitude is required')
     .isFloat({ min: -90, max: 90 })
     .withMessage('Latitude must be valid'),
 
   body('longi')
-    .notEmpty()
-    .withMessage('Longitude is required')
     .isFloat({ min: -180, max: 180 })
     .withMessage('Longitude must be valid'),
     
@@ -73,27 +65,19 @@ const userSignupValidationRules = [
     .withMessage('Category is not valid. please select with in categories only'),
 
   body('experienceRange')
-    .notEmpty()
-    .withMessage('Experience Range is required')
     .isIn(['0-1', '1-2', '2-3', '3-4', '4-5', '5+'])
     .withMessage('Invalid experience range'),
     
   body('keySkills')
-    .notEmpty()
-    .withMessage('Key Skills is required')
     .isArray({ min: 1 })
     .withMessage('At least one key skill is required')
     .custom(skills => skills.every(skill => typeof skill === 'string')).withMessage('All key skills must be strings'),
     
   body('role')
-    .notEmpty()
-    .withMessage('Role is required')
     .isString().withMessage('Role must be a string')
     .isLength({ min: 2 }).withMessage('Role must be at least 2 characters'),
 
   body('currentDesignation')
-    .notEmpty()
-    .withMessage('Current Designation is required')
     .isString().withMessage('Current designation must be a string')
     .isLength({ min: 2 }).withMessage('Designation must be at least 2 characters'),
 
@@ -131,6 +115,6 @@ const resumeValidator = (req, res, next) => {
 };
 
 export {
-     userSignupValidationRules,
+     userSignupValidations,
      resumeValidator
 };

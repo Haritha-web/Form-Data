@@ -1,6 +1,6 @@
 import { body,validationResult } from 'express-validator';
 
-const vendorLoginValidations = [
+const EmployerLoginValidations = [
     body('email')
         .notEmpty()
         .withMessage('Email is required')
@@ -31,7 +31,7 @@ const vendorLoginValidations = [
     },
 ];
 
-const vendorForgorPasswordValidations = [
+const EmployerForgorPasswordValidations = [
     body('email')
         .notEmpty()
         .withMessage('Email is required')
@@ -47,7 +47,7 @@ const vendorForgorPasswordValidations = [
     },
 ];
 
-const vendorResetPasswordValidations = [
+const EmployerResetPasswordValidations = [
     body('email')
         .notEmpty()
         .withMessage('Email is required')
@@ -85,7 +85,7 @@ const vendorResetPasswordValidations = [
 ];
 
 export {
-    vendorLoginValidations,
-    vendorForgorPasswordValidations,
-    vendorResetPasswordValidations
+    EmployerLoginValidations,
+    EmployerForgorPasswordValidations,
+    EmployerResetPasswordValidations
 };

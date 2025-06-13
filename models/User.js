@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     type: String, 
     required: true 
 },
-  email:     { 
+  email: { 
     type: String, 
     required: true, 
     unique: true 
@@ -23,22 +23,18 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
 },
-  gender:    { 
+  gender: { 
     type: String, 
-    enum: ['Male', 'Female', 'Other'], 
-    required: true 
+    enum: ['Male', 'Female', 'Other'],  
 },
-  dob:       { 
+  dob: { 
     type: Date, 
-    required: true 
 },
-  lati:      { 
+  lati: { 
     type: Number, 
-    required: true 
 },
-  longi:     { 
+  longi: { 
     type: Number, 
-    required: true 
 },
   image: {
     type: String,
@@ -50,24 +46,20 @@ const userSchema = new mongoose.Schema({
 category: {
   type: String,
   required: true,
-  enum: ['designer', 'developer', 'printer', 'other'] // example categories
+  enum: [ 'Nurse', 'Plumber', 'Electrician', 'Office boy', 'House Keeping', 'HVAC Mevhanic' ] // example categories
 },
 experienceRange: {
     type: String,
     enum: ['0-1', '1-2', '2-3', '3-4', '4-5', '5+'],
-    required: true
 },
 keySkills: [{
     type: String,
-    required: true
 }],
 role: {
     type: String,
-    required: true
 },
 currentDesignation: {
     type: String,
-    required: true
 },
 platform: {
     type: String           // e.g., "Android", "iOS", "Web"

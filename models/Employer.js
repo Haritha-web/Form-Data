@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const vendorSchema = new mongoose.Schema({
+const employerSchema = new mongoose.Schema({
   firstName: { 
     type: String, 
     required: true 
@@ -26,11 +26,35 @@ const vendorSchema = new mongoose.Schema({
   gender:    { 
     type: String, 
     enum: ['Male', 'Female', 'Other'], 
-    required: true 
 },
   dob:       { 
     type: Date, 
-    required: true 
+},
+companyName: {
+  type: String,
+  required: true
+},
+  companyAddress: {
+    city: {
+      type: String,
+      required: true
+    },
+    state: {
+      type: String,
+      required: true
+    },
+    country: {
+      type: String,
+      required: true
+    },
+    pincode: {
+      type: String,
+      required: true
+    }
+},
+isApproved: {
+  type: Boolean,
+  default: false
 },
 otp: {
   type: String
@@ -40,4 +64,4 @@ otpExpire: {
 }
 }, { timestamps: true });
 
-export default mongoose.model('Vendor', vendorSchema);
+export default mongoose.model('Employer', employerSchema);

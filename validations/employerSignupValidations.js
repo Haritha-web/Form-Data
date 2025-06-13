@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator';
 
-const vendorValidationRules = [
+const EmployerValidationRules = [
   body('firstName')
     .notEmpty()
     .withMessage('First name is required')
@@ -42,17 +42,35 @@ const vendorValidationRules = [
     .withMessage('Invalid phone number. Must be 10 digits starting with 6.'),
 
   body('gender')
-    .notEmpty()
-    .withMessage('Gender is required')
     .isIn(['Male', 'Female', 'Other'])
     .withMessage('Invalid gender'),
 
   body('dob')
-    .notEmpty()
-    .withMessage('Date of Birth is required')
     .isISO8601()
     .toDate()
     .withMessage('Valid DOB required'),
+
+  body('companyName')
+    .notEmpty()
+    .withMessage('Company name is required'),
+
+  body('companyAddress.city')
+    .notEmpty()
+    .withMessage('City is required'),
+
+  body('companyAddress.state')
+    .notEmpty()
+    .withMessage('State is required'),
+
+  body('companyAddress.country')
+    .notEmpty()
+    .withMessage('Country is required'),
+
+  body('companyAddress.pincode')
+    .notEmpty()
+    .withMessage('Pincode is required')
+    .isPostalCode('any')
+    .withMessage('Invalid pincode format'),
     (req,res,next)=>{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
@@ -64,5 +82,5 @@ const vendorValidationRules = [
 ];
 
 export {
-     vendorValidationRules
+     EmployerValidationRules
 };
