@@ -28,19 +28,19 @@ const createVendor = async (req, res) => {
     });
     await vendor.save();
     logger.info(`Vendor Created: ${email}`);
-    res.status(201).json({ message: 'Vendor created successfully' });
+    res.status(201).send({ message: 'Vendor created successfully' });
   } catch (error) {
     logger.error(`Vendor creation failed: ${error.message}`)
-    res.status(500).json({ message: 'Server error'});
+    res.status(500).send({ message: 'Server error'});
   }
 };
 
 const getVendors = async (req, res) => {
   try {
     const vendors = await Vendor.find();
-    res.json(vendors);
+    res.send(vendors);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).send({ error: err.message });
   }
 };
 
@@ -50,23 +50,23 @@ const loginVendor = async (req, res) => {
   try {
     const vendor = await Vendor.findOne({ email });
     if (!vendor)
-      return res.status(404).json({ message: 'Vendor not found with this email' });
+      return res.status(404).send({ message: 'Vendor not found with this email' });
 
     const isMatch = await bcrypt.compare(password, vendor.password);
     if (!isMatch)
-      return res.status(400).json({ message: 'Incorrect password' });
+      return res.status(400).send({ message: 'Incorrect password' });
 
     const token = jwt.sign({ id: vendor._id }, process.env.JWT_SECRET, {
       expiresIn: '1d',
     });
 
-    res.status(200).json({
+    res.status(200).send({
       message: 'Login successful',
       token,
     });
   } catch (err) {
     logger.error(`Login error: ${err.message}`);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).send({ message: 'Server error' });
   }
 };
 
@@ -76,7 +76,7 @@ const sendVendorOtp = async (req, res) => {
     const { email } = req.body;
     
     const vendor = await Vendor.findOne({ email });
-    if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
+    if (!vendor) return res.status(404).send({ message: 'Vendor not found' });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
     const otpExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
@@ -104,10 +104,10 @@ const sendVendorOtp = async (req, res) => {
       html,
     });
 
-    res.json({ message: 'OTP sent to vendor email successfully' });
+    res.send({ message: 'OTP sent to vendor email successfully' });
 
   } catch (err) {
-    res.status(500).json({ message: 'Error sending OTP', error: err.message });
+    res.status(500).send({ message: 'Error sending OTP', error: err.message });
   }
 };
 
@@ -123,7 +123,7 @@ const resetVendorPasswordWithOtp = async (req, res) => {
     });
 
     if (!vendor) {
-      return res.status(400).json({ message: 'Invalid or expired OTP' });
+      return res.status(400).send({ message: 'Invalid or expired OTP' });
     }
 
     // Hash and update new password
@@ -136,10 +136,10 @@ const resetVendorPasswordWithOtp = async (req, res) => {
 
     await vendor.save();
 
-    res.json({ message: 'Vendor password reset successful' });
+    res.send({ message: 'Vendor Password Reset successfully' });
 
   } catch (err) {
-    res.status(500).json({ message: 'Error resetting password', error: err.message });
+    res.status(500).send({ message: 'Error resetting password', error: err.message });
   }
 };
 

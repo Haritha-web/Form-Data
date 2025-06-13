@@ -18,10 +18,10 @@ const createUser = async (req, res) => {
     if (mobileExists) return res.status(400).send({ message: 'Mobile Number already exists' });
 
     if (!req.files || !req.files['image'] || req.files['image'].length === 0) {
-      return res.status(400).json({ message: 'Image is required' });
+      return res.status(400).send({ message: 'Image is required' });
     }
     if (!req.files['resume'] || req.files['resume'].length === 0) {
-      return res.status(400).json({ message: 'Resume is required' });
+      return res.status(400).send({ message: 'Resume is required' });
     }
 
     // Get actual filenames from files array
@@ -58,19 +58,19 @@ const createUser = async (req, res) => {
     });
     await user.save();
     logger.info(`User Created: ${email}`);
-    res.status(201).json({ message: 'User created successfully' });
+    res.status(201).send({ message: 'User created successfully' });
   } catch (error) {
     logger.error(`User creation failed: ${error.message}`)
-    res.status(500).json({ message: 'Server error'});
+    res.status(500).send({ message: 'Server error'});
   }
 };
 
 const getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    res.json(users);
+    res.send(users);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).send({ error: err.message });
   }
 };
 
@@ -80,23 +80,23 @@ const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user)
-      return res.status(404).json({ message: 'User not found with this email' });
+      return res.status(404).send({ message: 'User not found with this email' });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(400).json({ message: 'Incorrect password' });
+      return res.status(400).send({ message: 'Incorrect password' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1d',
     });
 
-    res.status(200).json({
+    res.status(200).send({
       message: 'Login successful',
       token,
     });
   } catch (err) {
     logger.error(`Login error: ${err.message}`);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).send({ message: 'Server error' });
   }
 };
 
@@ -105,7 +105,7 @@ const sendUserOtp = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).send({ message: 'User not found' });
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
     const otpExpire = Date.now() + 10 * 60 * 1000; // 10 min expiry
@@ -133,10 +133,10 @@ const sendUserOtp = async (req, res) => {
       html,
     });
 
-    res.json({ message: 'OTP sent to email successfully' });
+    res.send({ message: 'OTP sent to email successfully' });
 
   } catch (err) {
-    res.status(500).json({ message: 'Error sending OTP', error: err.message });
+    res.status(500).send({ message: 'Error sending OTP', error: err.message });
   }
 };
 
@@ -152,7 +152,7 @@ const resetUserPasswordWithOtp = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired OTP' });
+      return res.status(400).send({ message: 'Invalid or expired OTP' });
     }
 
     // Hash new password
@@ -165,9 +165,9 @@ const resetUserPasswordWithOtp = async (req, res) => {
 
     await user.save();
 
-    res.json({ message: 'Password reset successful' });
+    res.send({ message: 'Password Reset Successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Error resetting password', error: err.message });
+    res.status(500).send({ message: 'Error resetting password', error: err.message });
   }
 };
 
@@ -244,7 +244,7 @@ const downloadExcel = async (req, res) => {
 const downloadUserPDF = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).send({ message: 'User not found' });
 
     const doc = new PDFDocument();
     const fileName = `${user.firstName}_${user.lastName}_profile.pdf`;
@@ -292,7 +292,7 @@ const downloadUserPDF = async (req, res) => {
     logger.info(`PDF downloaded for user: ${user.email}`);
   } catch (error) {
     logger.error(`Error generating PDF: ${error.message}`);
-    res.status(500).json({ message: 'Failed to generate PDF' });
+    res.status(500).send({ message: 'Failed to generate PDF' });
   }
 };
 

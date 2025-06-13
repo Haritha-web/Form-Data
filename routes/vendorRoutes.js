@@ -1,7 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
 import { createVendor, getVendors, loginVendor, sendVendorOtp, resetVendorPasswordWithOtp } from '../controllers/vendorController.js';
-import vendorLoginValidations from '../validations/vendorLoginValidations.js';
+import { vendorLoginValidations, vendorForgorPasswordValidations, vendorResetPasswordValidations } from '../validations/vendorLoginValidations.js';
 import { vendorValidationRules } from '../validations/vendorSignupValidations.js';
 import verifyVendorToken from '../middlewares/authMiddleware.js';
 
@@ -16,8 +16,8 @@ router.get('/', getVendors);
 // Vendor Login
 router.post('/login', vendorLoginValidations, loginVendor);
 
-router.post('/forgot-password', sendVendorOtp);
-router.post('/reset-password', resetVendorPasswordWithOtp)
+router.post('/forgot-password', vendorForgorPasswordValidations, sendVendorOtp);
+router.post('/reset-password', vendorResetPasswordValidations, resetVendorPasswordWithOtp);
 
 // GET users by category (accessible only by logged-in vendor)
 router.get('/users/:category', verifyVendorToken, async (req, res) => {
