@@ -25,7 +25,7 @@ const uploadFields = upload.fields([
 router.post('/create', uploadFields, resumeValidator, userSignupValidationRules, createUser);
 
 // Fetch All Users
-router.get('/', getUsers);
+router.get('/get', getUsers);
 
 // Login User
 router.post('/login', userLoginValidations, loginUser);
