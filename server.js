@@ -2,7 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotEnv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
-import EmployerRoutes from './routes/employerRoutes.js';
+import employerRoutes from './routes/employerRoutes.js';
+import jobRoutes from './routes/jobRoutes.js';
+import superAdminRoutes from './routes/superAdminRoutes.js';
+import { verifySuperAdmin } from './middlewares/authMiddleware.js';
 import logger from './utils/loggers.js';
 import path from 'path';
 
@@ -22,11 +25,22 @@ mongoose.connect(process.env.MONGO_URI)
     logger.error(err)
 });
 
+// Public Login Route for Super Admin
+app.use('/superadmin', superAdminRoutes);
+
+// Super Admin Protected Routes (full access)
+app.use('/admin/user', verifySuperAdmin, userRoutes);
+app.use('/admin/employer', verifySuperAdmin, employerRoutes);
+app.use('/admin/job', verifySuperAdmin, jobRoutes);
+
 // User Routes
 app.use('/user', userRoutes);
 
 // Employer Routes
-app.use('/employer', EmployerRoutes);
+app.use('/employer', employerRoutes);
+
+// Job Routes
+app.use('/job', jobRoutes);
 
 //Server Uploads images
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));

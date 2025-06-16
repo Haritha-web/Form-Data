@@ -1,0 +1,53 @@
+// controllers/jobApplicationController.js
+import Job from '../models/Job.js';
+import JobApplication from '../models/JobApplication.js';
+
+const applyToJob = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { jobId } = req.body;
+
+    const job = await Job.findById(jobId);
+    if (!job) return res.status(404).send({ message: 'Job not found' });
+
+    // Check for duplicate application
+    const existing = await JobApplication.findOne({ user: userId, job: jobId });
+    if (existing)
+      return res.status(400).send({ message: 'You have already applied to this job' });
+
+    const application = new JobApplication({
+      user: userId,
+      job: jobId,
+    });
+
+    await application.save();
+    res.status(201).send({ message: 'Applied to job successfully', application });
+  } catch (error) {
+    res.status(500).send({ message: 'Error applying to job', error: error.message });
+  }
+};
+
+const getApplicantsForJob = async (req, res) => {
+  const { jobId } = req.params;
+
+  try {
+    const applications = await JobApplication.find({ job: jobId })
+      .populate('user', 'firstName lastName email mobile') // fetch applicant info
+      .populate('job', 'title companyName'); // fetch job info
+
+    res.status(200).send({
+      message: `Found ${applications.length} applicants`,
+      applications,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: 'Failed to fetch applicants for this job',
+      error: err.message,
+    });
+  }
+};
+
+export {
+    applyToJob,
+    getApplicantsForJob
+};

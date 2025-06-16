@@ -61,7 +61,7 @@ const userSignupValidations = [
   body('category')
     .notEmpty()
     .withMessage('Category is required')
-    .isIn(['designer', 'developer', 'printer', 'other'] )
+    .isIn( [ 'Nurse', 'Plumber', 'Electrician', 'Office boy', 'House Keeping', 'HVAC Mevhanic' ] )
     .withMessage('Category is not valid. please select with in categories only'),
 
   body('experienceRange')
