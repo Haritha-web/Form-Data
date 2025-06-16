@@ -1,6 +1,5 @@
 import express from 'express';
-import User from '../models/User.js';
-import { createEmployer, getEmployers, loginEmployer, approveEmployer, sendEmployerOtp, resetEmployerPasswordWithOtp } from '../controllers/employerController.js';
+import { createEmployer, getEmployers, loginEmployer, approveEmployer, sendEmployerOtp, resetEmployerPasswordWithOtp, usersByCategory } from '../controllers/employerController.js';
 import { EmployerLoginValidations, EmployerForgorPasswordValidations, EmployerResetPasswordValidations } from '../validations/employerLoginValidations.js';
 import { EmployerValidationRules } from '../validations/employerSignupValidations.js';
 import { verifyEmployerToken } from '../middlewares/authMiddleware.js';
@@ -23,20 +22,6 @@ router.post('/forgot-password', EmployerForgorPasswordValidations, sendEmployerO
 router.post('/reset-password', EmployerResetPasswordValidations, resetEmployerPasswordWithOtp);
 
 // GET users by category (accessible only by logged-in Employer)
-router.get('/users/:category', verifyEmployerToken, async (req, res) => {
-  const { category } = req.params;
-
-  const allowed = [ 'Nurse', 'Plumber', 'Electrician', 'Office boy', 'House Keeping', 'HVAC Mevhanic' ];
-  if (!allowed.includes(category)) {
-    return res.status(400).json({ message: 'Invalid category' });
-  }
-
-  try {
-    const users = await User.find({ category });
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch users' });
-  }
-});
+router.get('/users/:category', verifyEmployerToken, usersByCategory);
 
 export default router;

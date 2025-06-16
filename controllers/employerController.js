@@ -1,4 +1,5 @@
 import Employer from '../models/Employer.js';
+import User from '../models/User.js';
 import logger from '../utils/loggers.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -168,11 +169,32 @@ const resetEmployerPasswordWithOtp = async (req, res) => {
   }
 };
 
+const usersByCategory = async (req, res) => {
+  try{
+      const { category } = req.params;
+
+  const allowed = [ 'Nurse', 'Plumber', 'Electrician', 'Office boy', 'House Keeping', 'HVAC Mevhanic' ];
+  if (!allowed.includes(category)) {
+    return res.status(400).send({ message: 'Invalid category' });
+  }
+
+  try {
+    const users = await User.find({ category });
+    res.json(users);
+  } catch (error) {
+    res.status(500).send({ message: 'Failed to fetch users' });
+  }
+  } catch(error){
+  res.status(500).send({message: 'Error in getting Ctegories'})
+}
+} 
+
 export {
     createEmployer,
     getEmployers,
     loginEmployer,
     approveEmployer,
     sendEmployerOtp,
-    resetEmployerPasswordWithOtp
+    resetEmployerPasswordWithOtp,
+    usersByCategory
 };
