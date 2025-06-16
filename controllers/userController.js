@@ -17,19 +17,16 @@ const createUser = async (req, res) => {
     const mobileExists = await User.findOne({ mobile });
     if (mobileExists) return res.status(400).send({ message: 'Mobile Number already exists' });
 
-    if (!req.files || !req.files['image'] || req.files['image'].length === 0) {
-      return res.status(400).send({ message: 'Image is required' });
-    }
-    if (!req.files['resume'] || req.files['resume'].length === 0) {
+    if (!req.files || !req.files['resume'] || req.files['resume'].length === 0) {
       return res.status(400).send({ message: 'Resume is required' });
     }
 
     // Get actual filenames from files array
-    const imageFile = req.files["image"][0];
+    const imageFile = req.files?.['image']?.[0];
     const resumeFile = req.files["resume"][0];
 
     // Construct URL using filename
-    const imageUrl = `${process.env.BASE_URL}/uploads/${imageFile.filename}`;
+    const imageUrl = imageFile? `${process.env.BASE_URL}/uploads/${imageFile.filename}`: '';
     const resumeUrl = `${process.env.BASE_URL}/uploads/${resumeFile.filename}`;
 
     // Hash password

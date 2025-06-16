@@ -47,7 +47,33 @@ const getApplicantsForJob = async (req, res) => {
   }
 };
 
+const getJobsAppliedByUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const applications = await JobApplication.find({ user: userId })
+      .populate('job'); // Get full job details
+
+    const appliedJobs = applications.map(app => ({
+      appliedAt: app.appliedAt,
+      status: app.status,
+      job: app.job,
+    }));
+
+    res.status(200).send({
+      message: `Found ${appliedJobs.length} jobs applied by user`,
+      jobs: appliedJobs,
+    });
+  } catch (error) {
+    res.status(500).send({
+      message: 'Failed to fetch jobs applied by user',
+      error: error.message,
+    });
+  }
+};
+
 export {
     applyToJob,
-    getApplicantsForJob
+    getApplicantsForJob,
+    getJobsAppliedByUser
 };
