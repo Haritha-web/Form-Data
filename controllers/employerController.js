@@ -52,6 +52,25 @@ const getEmployers = async (req, res) => {
   }
 };
 
+const getEmployerById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate MongoDB ObjectId format (optional safety check)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).send({ message: 'Invalid Employer ID format' });
+    }
+
+    const employer = await Employer.findById(id);
+    if (!employer) return res.status(404).send({ message: 'Employer not found' });
+
+    res.status(200).send(employer);
+  } catch (error) {
+    logger.error(`Error fetching employer by ID: ${error.message}`);
+    res.status(500).send({ message: 'Server error' });
+  }
+};
+
 const loginEmployer = async (req, res) => {
   const { email, password } = req.body;
 
@@ -198,6 +217,7 @@ const usersByCategory = async (req, res) => {
 export {
     createEmployer,
     getEmployers,
+    getEmployerById,
     loginEmployer,
     approveEmployer,
     sendEmployerOtp,

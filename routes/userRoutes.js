@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createUser, getUsers, downloadExcel, downloadPDF, downloadUserPDF, loginUser, sendUserOtp, resetUserPasswordWithOtp} from '../controllers/userController.js';
+import { createUser, getUsers, getUserById, downloadExcel, downloadPDF, downloadUserPDF, loginUser, sendUserOtp, resetUserPasswordWithOtp} from '../controllers/userController.js';
 import { userSignupValidations, resumeValidator } from '../validations/UserSignupValidations.js';
 import { userLoginValidations, userForgotPasswordValidations, userResetPasswordValidations } from '../validations/userLoginValidations.js';
 
@@ -25,7 +25,10 @@ const uploadFields = upload.fields([
 router.post('/create', uploadFields, resumeValidator, userSignupValidations, createUser);
 
 // Fetch All Users
-router.get('/get', getUsers);
+router.get('/get-all-users', getUsers);
+
+// Fetch Single User By Id
+router.get('/get-user/:id', getUserById);
 
 // Login User
 router.post('/login', userLoginValidations, loginUser);

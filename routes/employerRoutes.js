@@ -1,5 +1,5 @@
 import express from 'express';
-import { createEmployer, getEmployers, loginEmployer, approveEmployer, sendEmployerOtp, resetEmployerPasswordWithOtp, usersByCategory } from '../controllers/employerController.js';
+import { createEmployer, getEmployers, getEmployerById, loginEmployer, approveEmployer, sendEmployerOtp, resetEmployerPasswordWithOtp, usersByCategory } from '../controllers/employerController.js';
 import { EmployerLoginValidations, EmployerForgorPasswordValidations, EmployerResetPasswordValidations } from '../validations/employerLoginValidations.js';
 import { EmployerValidationRules } from '../validations/employerSignupValidations.js';
 import { verifyEmployerToken } from '../middlewares/authMiddleware.js';
@@ -10,7 +10,10 @@ const router = express.Router();
 router.post('/create', EmployerValidationRules, createEmployer);
 
 // Fetch All Employers
-router.get('/get', getEmployers);
+router.get('/get-all-employers', getEmployers);
+
+// Fetch Single Employee On Id
+router.get('/get-employer/:id', getEmployerById);
 
 // Employer Login
 router.post('/login', EmployerLoginValidations, loginEmployer);

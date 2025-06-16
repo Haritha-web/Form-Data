@@ -74,6 +74,25 @@ const getUsers = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ID format (optional but safe)
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).send({ message: 'Invalid user ID format' });
+    }
+
+    const user = await User.findById(id);
+    if (!user) return res.status(404).send({ message: 'User not found' });
+
+    res.status(200).send(user);
+  } catch (error) {
+    logger.error(`Error fetching user by ID: ${error.message}`);
+    res.status(500).send({ message: 'Server error' });
+  }
+};
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -299,6 +318,7 @@ const downloadUserPDF = async (req, res) => {
 export {
     createUser,
     getUsers,
+    getUserById,
     loginUser,
     sendUserOtp,
     resetUserPasswordWithOtp,
