@@ -60,8 +60,8 @@ const loginEmployer = async (req, res) => {
     if (!employer)
       return res.status(404).send({ message: 'Employer not found with this email' });
 
-    if (!employer.isApproved)
-      return res.status(403).send({ message: 'Your account is not approved yet by admin' });
+    if (!employer.isApproved !== 'Approved')
+      return res.status(403).send({ message: `Your account is ${employer.isApproved}` });
 
     const isMatch = await bcrypt.compare(password, employer.password);
     if (!isMatch)
@@ -84,15 +84,21 @@ const loginEmployer = async (req, res) => {
 const approveEmployer = async (req, res) => {
   try {
     const { id } = req.params;
+    const { action } = req.body;
+
+    if (!['Approved', 'Rejected'].includes(action)) {
+      return res.status(400).send({ message: 'Invalid action. Must be "Approved" or "Rejected"' });
+    }
+
     const employer = await Employer.findById(id);
     if (!employer) return res.status(404).send({ message: 'Employer not found' });
 
-    employer.isApproved = true;
+    employer.isApproved = action;
     await employer.save();
 
-    res.send({ message: 'Employer approved successfully' });
+    res.send({ message: `Employer ${action.toLowerCase() } successfully` });
   } catch (err) {
-    res.status(500).send({ message: 'Error approving employer', error: err.message });
+    res.status(500).send({ message: 'Error updating employer status', error: err.message });
   }
 };
 

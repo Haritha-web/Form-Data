@@ -53,8 +53,9 @@ companyName: {
     }
 },
 isApproved: {
-  type: Boolean,
-  default: false
+  type: String,
+  enum: [ 'Pending', 'Approved', 'Rejected'],
+  default: 'Pending'
 },
 otp: {
   type: String
