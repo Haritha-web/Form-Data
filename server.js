@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotEnv from 'dotenv';
 import userRoutes from './routes/userRoutes.js';
+import cors from 'cors';
 import employerRoutes from './routes/employerRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import superAdminRoutes from './routes/superAdminRoutes.js';
@@ -11,6 +12,13 @@ import path from 'path';
 
 dotEnv.config()
 const app = express();
+
+// ✅ Enable CORS
+app.use(cors({
+    origin: '*', // Or specify allowed domains: ['https://yourdomain.com']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Middleware
 app.use(express.json());  // For JSON body
