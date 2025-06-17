@@ -42,10 +42,12 @@ const EmployerValidationRules = [
     .withMessage('Invalid phone number. Must be 10 digits starting with 6.'),
 
   body('gender')
+    .optional()
     .isIn(['Male', 'Female', 'Other'])
     .withMessage('Invalid gender'),
 
   body('dob')
+    .optional()
     .isISO8601()
     .toDate()
     .withMessage('Valid DOB required'),

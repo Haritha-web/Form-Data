@@ -1,6 +1,5 @@
 import express from 'express';
-import { createEmployer, getEmployers, getEmployerById, loginEmployer, approveEmployer, sendEmployerOtp, resetEmployerPasswordWithOtp, usersByCategory } from '../controllers/employerController.js';
-import { EmployerLoginValidations, EmployerForgorPasswordValidations, EmployerResetPasswordValidations } from '../validations/employerLoginValidations.js';
+import { createEmployer, getEmployers, getEmployerById, approveEmployer, usersByCategory } from '../controllers/employerController.js';
 import { EmployerValidationRules } from '../validations/employerSignupValidations.js';
 import { verifyEmployerToken } from '../middlewares/authMiddleware.js';
 
@@ -15,14 +14,8 @@ router.get('/get-all-employers', getEmployers);
 // Fetch Single Employee On Id
 router.get('/get-employer/:id', getEmployerById);
 
-// Employer Login
-router.post('/login', EmployerLoginValidations, loginEmployer);
-
 // Approved Employer by Super Admin
 router.put('/approve/:id', approveEmployer);
-
-router.post('/forgot-password', EmployerForgorPasswordValidations, sendEmployerOtp);
-router.post('/reset-password', EmployerResetPasswordValidations, resetEmployerPasswordWithOtp);
 
 // GET users by category (accessible only by logged-in Employer)
 router.get('/users/:category', verifyEmployerToken, usersByCategory);

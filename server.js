@@ -5,7 +5,8 @@ import userRoutes from './routes/userRoutes.js';
 import cors from 'cors';
 import employerRoutes from './routes/employerRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
-import superAdminRoutes from './routes/superAdminRoutes.js';
+//import superAdminRoutes from './routes/superAdminRoutes.js';
+import loginRoutes from './routes/loginRoutes.js';
 import { verifySuperAdmin } from './middlewares/authMiddleware.js';
 import logger from './utils/loggers.js';
 import path from 'path';
@@ -33,8 +34,8 @@ mongoose.connect(process.env.MONGO_URI)
     logger.error(err)
 });
 
-// Public Login Route for Super Admin
-app.use('/superadmin', superAdminRoutes);
+// Public Login Route 
+app.use('/api', loginRoutes);
 
 // Super Admin Protected Routes (full access)
 app.use('/admin/user', verifySuperAdmin, userRoutes);

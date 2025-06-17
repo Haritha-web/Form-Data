@@ -4,8 +4,6 @@ import ExcelJS from 'exceljs';
 import bcrypt from 'bcrypt';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
-import jwt from 'jsonwebtoken';
-import nodemailer from'nodemailer';
 
 const createUser = async (req, res) => {
   const { firstName, lastName, email, password, mobile, gender, dob, lati, longi, category, experienceRange, keySkills, role, currentDesignation, platform, model, os_version } = req.body;
@@ -17,17 +15,13 @@ const createUser = async (req, res) => {
     const mobileExists = await User.findOne({ mobile });
     if (mobileExists) return res.status(400).send({ message: 'Mobile Number already exists' });
 
-    if (!req.files || !req.files['resume'] || req.files['resume'].length === 0) {
-      return res.status(400).send({ message: 'Resume is required' });
-    }
-
     // Get actual filenames from files array
     const imageFile = req.files?.['image']?.[0];
-    const resumeFile = req.files["resume"][0];
+    const resumeFile = req.files?.['resume']?.[0];
 
     // Construct URL using filename
     const imageUrl = imageFile? `${process.env.BASE_URL}/uploads/${imageFile.filename}`: '';
-    const resumeUrl = `${process.env.BASE_URL}/uploads/${resumeFile.filename}`;
+    const resumeUrl = resumeFile? `${process.env.BASE_URL}/uploads/${resumeFile.filename}`: '';
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -90,100 +84,67 @@ const getUserById = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+const updateUser = async (req, res) => {
+  const userId = req.params.id;
+  const {
+    firstName,
+    lastName,
+    mobile,
+    gender,
+    dob,
+    lati,
+    longi,
+    category,
+    experienceRange,
+    keySkills,
+    role,
+    currentDesignation,
+    platform,
+    model,
+    os_version
+  } = req.body;
 
   try {
-    const user = await User.findOne({ email });
-    if (!user)
-      return res.status(404).send({ message: 'User not found with this email' });
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).send({ message: 'Incorrect password' });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-
-    res.status(200).send({
-      message: 'Login successful',
-      token,
-    });
-  } catch (err) {
-    logger.error(`Login error: ${err.message}`);
-    res.status(500).send({ message: 'Server error' });
-  }
-};
-
-const sendUserOtp = async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    const user = await User.findOne({ email });
+    const user = await User.findById(userId);
     if (!user) return res.status(404).send({ message: 'User not found' });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
-    const otpExpire = Date.now() + 10 * 60 * 1000; // 10 min expiry
-
-    // Update user with OTP and expiry
-    user.otp = otp;
-    user.otpExpire = otpExpire;
-    await user.save();
-
-    // Send OTP via email (direct in controller)
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const html = `<p>Your OTP for password reset is <b>${otp}</b>. It is valid for 10 minutes.</p>`;
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Password Reset OTP',
-      html,
-    });
-
-    res.send({ message: 'OTP sent to email successfully' });
-
-  } catch (err) {
-    res.status(500).send({ message: 'Error sending OTP', error: err.message });
-  }
-};
-
-// Reset password using email + OTP + new password
-const resetUserPasswordWithOtp = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
-
-  try {
-    const user = await User.findOne({
-      email,
-      otp,
-      otpExpire: { $gt: Date.now() }, // valid only if not expired
-    });
-
-    if (!user) {
-      return res.status(400).send({ message: 'Invalid or expired OTP' });
+    // Prevent email or password from being updated
+    if ('email' in req.body || 'password' in req.body) {
+      return res.status(400).send({ message: 'Email or Password cannot be updated' });
     }
 
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+    // Handle file uploads (if any)
+    const imageFile = req.files?.['image']?.[0];
+    const resumeFile = req.files?.['resume']?.[0];
 
-    // Clear OTP
-    user.otp = undefined;
-    user.otpExpire = undefined;
+    const imageUrl = imageFile ? `${process.env.BASE_URL}/uploads/${imageFile.filename}` : user.image;
+    const resumeUrl = resumeFile ? `${process.env.BASE_URL}/uploads/${resumeFile.filename}` : user.resume;
+
+    // Update allowed fields
+    user.firstName = firstName ?? user.firstName;
+    user.lastName = lastName ?? user.lastName;
+    user.mobile = mobile ?? user.mobile;
+    user.gender = gender ?? user.gender;
+    user.dob = dob ?? user.dob;
+    user.lati = lati ?? user.lati;
+    user.longi = longi ?? user.longi;
+    user.category = category ?? user.category;
+    user.experienceRange = experienceRange ?? user.experienceRange;
+    user.keySkills = keySkills ?? user.keySkills;
+    user.role = role ?? user.role;
+    user.currentDesignation = currentDesignation ?? user.currentDesignation;
+    user.platform = platform ?? user.platform;
+    user.model = model ?? user.model;
+    user.os_version = os_version ?? user.os_version;
+    user.image = imageUrl;
+    user.resume = resumeUrl;
 
     await user.save();
-
-    res.send({ message: 'Password Reset Successfully' });
+    logger.info(`User updated: ${user.email}`);
+    res.status(200).send({ message: 'User updated successfully' });
   } catch (err) {
-    res.status(500).send({ message: 'Error resetting password', error: err.message });
+    logger.error(`User update failed: ${err.message}`);
+    res.status(500).send({ message: 'Server error' });
   }
 };
 
@@ -316,9 +277,7 @@ export {
     createUser,
     getUsers,
     getUserById,
-    loginUser,
-    sendUserOtp,
-    resetUserPasswordWithOtp,
+    updateUser,
     downloadExcel,
     downloadPDF,
     downloadUserPDF

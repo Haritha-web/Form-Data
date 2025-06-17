@@ -1,6 +1,6 @@
 import { body,validationResult } from 'express-validator';
 
-const userLoginValidations = [
+const loginValidations = [
     body('email')
         .notEmpty()
         .withMessage('')
@@ -31,7 +31,7 @@ const userLoginValidations = [
     },
 ];
 
-const userForgotPasswordValidations = [
+const forgotPasswordValidations = [
     body('email')
         .notEmpty()
         .withMessage('Email is required')
@@ -48,7 +48,7 @@ const userForgotPasswordValidations = [
     },
 ];
 
-const userResetPasswordValidations = [
+const resetPasswordValidations = [
     body('email')
         .notEmpty()
         .withMessage('Email is required')
@@ -86,7 +86,7 @@ const userResetPasswordValidations = [
 ];
 
 export {
-    userLoginValidations,
-    userForgotPasswordValidations,
-    userResetPasswordValidations
+    loginValidations,
+    forgotPasswordValidations,
+    resetPasswordValidations
 };

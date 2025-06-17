@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema({
 },
   gender: { 
     type: String, 
-    enum: ['Male', 'Female', 'Other'],  
+    enum: ['Male', 'Female', 'Other'], 
+    required: true 
 },
   dob: { 
     type: Date, 
@@ -41,7 +42,6 @@ const userSchema = new mongoose.Schema({
 },
   resume: {
     type: String,
-    required: true
 },
 category: {
   type: String,

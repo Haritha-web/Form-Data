@@ -1,8 +1,8 @@
 import express from 'express';
 import multer from 'multer';
-import { createUser, getUsers, getUserById, downloadExcel, downloadPDF, downloadUserPDF, loginUser, sendUserOtp, resetUserPasswordWithOtp} from '../controllers/userController.js';
-import { userSignupValidations, resumeValidator } from '../validations/UserSignupValidations.js';
-import { userLoginValidations, userForgotPasswordValidations, userResetPasswordValidations } from '../validations/userLoginValidations.js';
+import { createUser, getUsers, getUserById, updateUser, downloadExcel, downloadPDF, downloadUserPDF } from '../controllers/userController.js';
+import { userSignupValidations, userUpdateValidations } from '../validations/UserSignupValidations.js';
+import { verifyUserToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -22,19 +22,25 @@ const uploadFields = upload.fields([
 ]);
 
 // Create User
-router.post('/create', uploadFields, resumeValidator, userSignupValidations, createUser);
+router.post('/create', uploadFields, userSignupValidations, createUser);
 
 // Fetch All Users
 router.get('/get-all-users', getUsers);
 
+// Update User
+router.put(
+  '/update-user/:id',
+  verifyUserToken, 
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'resume', maxCount: 1 }
+  ]),
+  userUpdateValidations,
+  updateUser
+);
+
 // Fetch Single User By Id
 router.get('/get-user/:id', getUserById);
-
-// Login User
-router.post('/login', userLoginValidations, loginUser);
-
-router.post('/forgot-password', userForgotPasswordValidations, sendUserOtp);
-router.post('/reset-password', userResetPasswordValidations, resetUserPasswordWithOtp);
 
 // Download Excel
 router.get('/download/excel', downloadExcel);
