@@ -58,29 +58,34 @@ const createUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ isDeleted: false });
     res.send(users);
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
 
+// Get User by ID
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ID format (optional but safe)
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).send({ message: 'Invalid user ID format' });
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).send({ error: 'Invalid User ID' });
     }
 
-    const user = await User.findById(id);
-    if (!user) return res.status(404).send({ message: 'User not found' });
+    const user = await User.findOne({ _id: id, isDeleted: false });
 
-    res.status(200).send(user);
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+
+    res.status(200).send({ user });
   } catch (error) {
-    logger.error(`Error fetching user by ID: ${error.message}`);
-    res.status(500).send({ message: 'Server error' });
+    logger.error('Get User by ID Error: ' + error.message);
+    console.error('Full Error:', error); // For debugging during development
+    res.status(500).send({ error: 'Failed to fetch user details' });
   }
 };
 
@@ -144,6 +149,28 @@ const updateUser = async (req, res) => {
     res.status(200).send({ message: 'User updated successfully' });
   } catch (err) {
     logger.error(`User update failed: ${err.message}`);
+    res.status(500).send({ message: 'Server error' });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) return res.status(404).send({ message: 'User not found' });
+
+    if (user.isDeleted) {
+      return res.status(400).send({ message: 'User already deleted' });
+    }
+
+    user.isDeleted = true;
+    await user.save();
+
+    logger.info(`User soft deleted: ${user.email}`);
+    res.status(200).send({ message: 'User deleted successfully' });
+  } catch (error) {
+    logger.error(`Soft delete failed: ${error.message}`);
     res.status(500).send({ message: 'Server error' });
   }
 };
@@ -278,6 +305,7 @@ export {
     getUsers,
     getUserById,
     updateUser,
+    deleteUser,
     downloadExcel,
     downloadPDF,
     downloadUserPDF

@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createUser, getUsers, getUserById, updateUser, downloadExcel, downloadPDF, downloadUserPDF } from '../controllers/userController.js';
+import { createUser, getUsers, getUserById, updateUser, deleteUser, downloadExcel, downloadPDF, downloadUserPDF } from '../controllers/userController.js';
 import { userSignupValidations, userUpdateValidations } from '../validations/UserSignupValidations.js';
 import { verifyUserToken } from '../middlewares/authMiddleware.js';
 
@@ -27,6 +27,9 @@ router.post('/create', uploadFields, userSignupValidations, createUser);
 // Fetch All Users
 router.get('/get-all-users', getUsers);
 
+// Fetch Single User By Id
+router.get('/get-user/:id', getUserById);
+
 // Update User
 router.put(
   '/update-user/:id',
@@ -39,8 +42,8 @@ router.put(
   updateUser
 );
 
-// Fetch Single User By Id
-router.get('/get-user/:id', getUserById);
+// Delete User
+router.delete('/delete-user/:id', deleteUser);
 
 // Download Excel
 router.get('/download/excel', downloadExcel);

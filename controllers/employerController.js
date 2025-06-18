@@ -43,28 +43,100 @@ const createEmployer = async (req, res) => {
 
 const getEmployers = async (req, res) => {
   try {
-    const Employers = await Employer.find();
-    res.send(Employers);
+    const employers = await Employer.find({ isDeleted: false });
+    res.send(employers);
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
 
+// Get Employer by ID
 const getEmployerById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate MongoDB ObjectId format (optional safety check)
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).send({ message: 'Invalid Employer ID format' });
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).send({ error: 'Invalid User ID' });
     }
+
+    const employer = await Employer.findOne({ _id: id, isDeleted: false });
+
+    if (!employer) {
+      return res.status(404).send({ error: 'Employer not found' });
+    }
+
+    res.status(200).send({ employer });
+  } catch (error) {
+    logger.error('Get User by ID Error: ' + error.message);
+    console.error('Full Error:', error); // For debugging during development
+    res.status(500).send({ error: 'Failed to fetch employer details' });
+  }
+};
+
+const updateEmployer = async (req, res) => {
+  const { id } = req.params;
+  const {
+    firstName,
+    lastName,
+    mobile,
+    gender,
+    dob,
+    companyName,
+    companyAddress
+  } = req.body;
+
+  try {
+    const employer = await Employer.findById(id);
+    if (!employer) return res.status(404).send({ message: 'Employer not found' });
+
+    // Prevent email or password update
+    if ('email' in req.body || 'password' in req.body) {
+      return res.status(400).send({ message: 'Email or Password cannot be updated' });
+    }
+
+    // Update allowed fields
+    employer.firstName = firstName ?? employer.firstName;
+    employer.lastName = lastName ?? employer.lastName;
+    employer.mobile = mobile ?? employer.mobile;
+    employer.gender = gender ?? employer.gender;
+    employer.dob = dob ?? employer.dob;
+    employer.companyName = companyName ?? employer.companyName;
+
+    if (companyAddress) {
+      employer.companyAddress.city = companyAddress.city ?? employer.companyAddress.city;
+      employer.companyAddress.state = companyAddress.state ?? employer.companyAddress.state;
+      employer.companyAddress.country = companyAddress.country ?? employer.companyAddress.country;
+      employer.companyAddress.pincode = companyAddress.pincode ?? employer.companyAddress.pincode;
+    }
+
+    await employer.save();
+    logger.info(`Employer updated: ${employer.email}`);
+    res.status(200).send({ message: 'Employer updated successfully' });
+  } catch (error) {
+    logger.error(`Employer update failed: ${error.message}`);
+    res.status(500).send({ message: 'Server error' });
+  }
+};
+
+const deleteEmployer = async (req, res) => {
+  try {
+    const { id } = req.params;
 
     const employer = await Employer.findById(id);
     if (!employer) return res.status(404).send({ message: 'Employer not found' });
 
-    res.status(200).send(employer);
+    if (employer.isDeleted) {
+      return res.status(400).send({ message: 'Employer already deleted' });
+    }
+
+    employer.isDeleted = true;
+    await employer.save();
+
+    logger.info(`Employer soft deleted: ${employer.email}`);
+    res.status(200).send({ message: 'Employer deleted successfully' });
   } catch (error) {
-    logger.error(`Error fetching employer by ID: ${error.message}`);
+    logger.error(`Soft delete failed: ${error.message}`);
     res.status(500).send({ message: 'Server error' });
   }
 };
@@ -114,6 +186,8 @@ export {
     createEmployer,
     getEmployers,
     getEmployerById,
+    updateEmployer,
+    deleteEmployer,
     approveEmployer,
     usersByCategory
 };

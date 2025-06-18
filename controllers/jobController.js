@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Job from '../models/Job.js';
 import logger from '../utils/loggers.js';
 
@@ -61,6 +62,30 @@ const getAllJobs = async (req, res) => {
   } catch (error) {
     logger.error('Get All Jobs Error: ' + error.message);
     res.status(500).send({ error: 'Failed to fetch jobs' });
+  }
+};
+
+// Get Job by ID
+const getJobById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).send({ error: 'Invalid Job ID' });
+    }
+
+    const job = await Job.findOne({ _id: id, isDeleted: false });
+
+    if (!job) {
+      return res.status(404).send({ error: 'Job not found' });
+    }
+
+    res.status(200).send({ job });
+  } catch (error) {
+    logger.error('Get Job by ID Error: ' + error.message);
+    console.error('Full Error:', error); // For debugging during development
+    res.status(500).send({ error: 'Failed to fetch job details' });
   }
 };
 
@@ -140,6 +165,7 @@ const getJobsByEmployer = async (req, res) => {
 export {
   createJob,
   getAllJobs,
+  getJobById,
   updateJob,
   deleteJob,
   getJobsByEmployer
