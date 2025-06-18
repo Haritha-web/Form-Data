@@ -4,6 +4,7 @@ import {
   getAllJobs,
   updateJob,
   deleteJob,
+  getJobsByEmployer
 } from '../controllers/jobController.js';
 import { validateCreateJob, validateUpdateJob } from '../validations/jobValidations.js';
 import { applyToJob, getApplicantsForJob, getJobsAppliedByUser } from '../controllers/jobApplicationController.js';
@@ -15,6 +16,7 @@ const router = express.Router();
 router.post('/post-job', verifyEmployerToken, validateCreateJob, createJob);         // Create job
 router.put('/update-job/:id', verifyEmployerToken, validateUpdateJob, updateJob);       // Update job
 router.delete('/delete-job/:id', verifyEmployerToken, deleteJob);    // Delete job
+router.get('/get-jobs-by-employer/:employerId', verifyEmployerToken, getJobsByEmployer);
 
 router.post('/apply-job', verifyUserToken, applyToJob);
 router.get('/applied-jobs/:userId', verifyUserToken, getJobsAppliedByUser);

@@ -61,6 +61,10 @@ const jobSchema = new mongoose.Schema(
       ref: 'Employer',
       required: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

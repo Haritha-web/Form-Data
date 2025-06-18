@@ -53,40 +53,87 @@ const createJob = async (req, res) => {
   }
 };
 
-// Get All Jobs
+// Get All Jobs (Only non-deleted)
 const getAllJobs = async (req, res) => {
   try {
-    const jobs = await Job.find().sort({ createdAt: -1 });
+    const jobs = await Job.find({ isDeleted: false }).sort({ createdAt: -1 });
     res.status(200).send(jobs);
   } catch (error) {
-    logger.error(error.message);
+    logger.error('Get All Jobs Error: ' + error.message);
     res.status(500).send({ error: 'Failed to fetch jobs' });
   }
 };
 
-// Update Job
+// Update Job (Only if created by the employer)
 const updateJob = async (req, res) => {
   try {
-    const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedJob) return res.status(404).send({ error: 'Job not found' });
+    const employerId = req.employer?.id;
+    if (!employerId) {
+      return res.status(401).send({ error: 'Unauthorized: Employer ID missing' });
+    }
 
+    const job = await Job.findById(req.params.id);
+    if (!job || job.isDeleted) {
+      return res.status(404).send({ error: 'Job not found' });
+    }
+
+    if (job.createdBy.toString() !== employerId.toString()) {
+      return res.status(403).send({ error: 'Forbidden: You can only update your own jobs' });
+    }
+
+    const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.status(200).send({ message: 'Job updated successfully', updatedJob });
   } catch (error) {
-    logger.error(error.message);
+    logger.error('Update Job Error: ' + error.message);
     res.status(500).send({ error: 'Failed to update job' });
   }
 };
 
-// Delete Job
+// Soft Delete Job
 const deleteJob = async (req, res) => {
   try {
-    const deletedJob = await Job.findByIdAndDelete(req.params.id);
-    if (!deletedJob) return res.status(404).send({ error: 'Job not found' });
+    const employerId = req.employer?.id;
+    if (!employerId) {
+      return res.status(401).send({ error: 'Unauthorized: Employer ID missing' });
+    }
 
-    res.status(200).send({ message: 'Job deleted successfully' });
+    const job = await Job.findById(req.params.id);
+    if (!job || job.isDeleted) {
+      return res.status(404).send({ error: 'Job not found' });
+    }
+
+    if (job.createdBy.toString() !== employerId.toString()) {
+      return res.status(403).send({ error: 'Forbidden: You can only delete your own jobs' });
+    }
+
+    job.isDeleted = true;
+    await job.save();
+
+    res.status(200).send({ message: 'Job soft-deleted successfully' });
   } catch (error) {
-    logger.error(error.message);
+    logger.error('Soft Delete Job Error: ' + error.message);
     res.status(500).send({ error: 'Failed to delete job' });
+  }
+};
+
+// Get Jobs by Employer ID
+const getJobsByEmployer = async (req, res) => {
+  try {
+    const { employerId } = req.params;
+
+    const jobs = await Job.find({
+      createdBy: employerId,
+      isDeleted: false,
+    }).sort({ createdAt: -1 });
+
+    if (jobs.length === 0) {
+      return res.status(404).send({ message: 'No jobs found for this employer' });
+    }
+
+    res.status(200).send({ total: jobs.length, jobs });
+  } catch (error) {
+    logger.error('Get Jobs by Employer Error: ' + error.message);
+    res.status(500).send({ error: 'Failed to fetch jobs' });
   }
 };
 
@@ -95,4 +142,5 @@ export {
   getAllJobs,
   updateJob,
   deleteJob,
+  getJobsByEmployer
 };
