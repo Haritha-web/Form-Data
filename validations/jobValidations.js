@@ -1,4 +1,5 @@
 import { body, param, validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 
 // Create Job
 const validateCreateJob = [
@@ -34,19 +35,6 @@ const validateCreateJob = [
       },
 ];
 
-// Get Job By ID & Delete Job
-const validateJobId = [
-  param('id').isMongoId().withMessage('Invalid job ID'),
-  async (req, res, next) => {
-          const errors = validationResult(req);
-          if(!errors.isEmpty()){
-              const firstError = errors.array()[0]
-              return res.status(400).json({errors: firstError.msg })
-          }
-          next();
-      },
-];
-
 // Update Job (partial validation — only if fields are sent)
 const validateUpdateJob = [
   param('id').isMongoId().withMessage('Invalid job ID'),
@@ -72,8 +60,51 @@ const validateUpdateJob = [
         },
 ];
 
+const isValidObjectId = (value) => {
+  if (!mongoose.Types.ObjectId.isValid(value)) {
+    throw new Error('Invalid MongoDB ObjectId');
+  }
+  return true;
+};
+
+const deleteJobValidation = [
+  param('id')
+    .custom(isValidObjectId)
+    .withMessage('Invalid Job ID format'),
+    (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        errors: errors.array().map(err => ({
+          field: err.param,
+          message: err.msg
+        }))
+      });
+    }
+    next();
+  }
+];
+const getJobsByEmployerValidation = [
+  param('employerId')
+    .custom(isValidObjectId)
+    .withMessage('Invalid Employer ID format'),
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(422).json({
+            errors: errors.array().map(err => ({
+              field: err.param,
+              message: err.msg
+            }))
+          });
+        }
+        next();
+      }
+];
+
 export {
     validateCreateJob,
-    validateJobId,
-    validateUpdateJob
+    validateUpdateJob,
+    deleteJobValidation,
+    getJobsByEmployerValidation
 };

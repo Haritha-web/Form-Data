@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import { createUser, getUsers, getUserById, updateUser, deleteUser, downloadExcel, downloadPDF, downloadUserPDF } from '../controllers/userController.js';
-import { userSignupValidations, userUpdateValidations } from '../validations/UserSignupValidations.js';
+import { userSignupValidations, userUpdateValidations, userDeleteValidations } from '../validations/userValidations.js';
 import { verifyUserToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -25,10 +25,10 @@ const uploadFields = upload.fields([
 router.post('/create', uploadFields, userSignupValidations, createUser);
 
 // Fetch All Users
-router.get('/get-all-users', getUsers);
+router.get('/get-all-users', verifyUserToken, getUsers);
 
 // Fetch Single User By Id
-router.get('/get-user/:id', getUserById);
+router.get('/get-user/:id', verifyUserToken, getUserById);
 
 // Update User
 router.put(
@@ -43,7 +43,7 @@ router.put(
 );
 
 // Delete User
-router.delete('/delete-user/:id', deleteUser);
+router.delete('/delete-user/:id', verifyUserToken, userDeleteValidations, deleteUser);
 
 // Download Excel
 router.get('/download/excel', downloadExcel);

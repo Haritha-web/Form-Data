@@ -1,4 +1,5 @@
-import { body, validationResult } from 'express-validator';
+import { body, param, validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 
 const userSignupValidations = [
   body('firstName')
@@ -224,7 +225,31 @@ const userUpdateValidations = [
     },
 ];
 
+// Utility to check for valid ObjectId
+const isValidObjectId = (value) => {
+  if (!mongoose.Types.ObjectId.isValid(value)) {
+    throw new Error('Invalid MongoDB ID');
+  }
+  return true;
+};
+const userDeleteValidations = [
+  param('id').custom(isValidObjectId),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        errors: errors.array().map(err => ({
+          field: err.param,
+          message: err.msg
+        }))
+      });
+    }
+    next();
+  }
+];
+
 export {
      userSignupValidations,
-     userUpdateValidations
+     userUpdateValidations,
+     userDeleteValidations
 };
