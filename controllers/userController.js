@@ -4,7 +4,6 @@ import logger from '../utils/loggers.js';
 import ExcelJS from 'exceljs';
 import bcrypt from 'bcrypt';
 import PDFDocument from 'pdfkit';
-import fs from 'fs';
 
 const createUser = async (req, res) => {
   const { firstName, lastName, email, password, mobile, gender, dob, lati, longi, category, experienceRange, keySkills, role, currentDesignation, platform, model, os_version } = req.body;

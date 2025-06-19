@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { createUser, getUsers, getUserById, updateUser, deleteUser, downloadExcel, downloadPDF, downloadUserPDF } from '../controllers/userController.js';
 import { userSignupValidations, userUpdateValidations, userDeleteValidations } from '../validations/userValidations.js';
-import { verifyEmployerToken, verifyUserToken } from '../middlewares/authMiddleware.js';
+import { verifyToken, verifyUserToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -25,10 +25,10 @@ const uploadFields = upload.fields([
 router.post('/create', uploadFields, userSignupValidations, createUser);
 
 // Fetch All Users
-router.get('/get-all-users', verifyEmployerToken, getUsers);
+router.get('/get-all-users', verifyToken, getUsers);
 
 // Fetch Single User By Id
-router.get('/get-user/:id', getUserById);
+router.get('/get-user/:id', verifyToken, getUserById);
 
 // Update User
 router.put(
@@ -46,10 +46,10 @@ router.put(
 router.delete('/delete-user/:id', userDeleteValidations, deleteUser);
 
 // Download Excel
-router.get('/download/excel', downloadExcel);
+router.get('/download/excel', verifyToken, downloadExcel);
 
 // Download PDF
-router.get('/download/pdf', downloadPDF);
-router.get('/download/pdf/:id', downloadUserPDF);
+router.get('/download/pdf', verifyToken, downloadPDF);
+router.get('/download/pdf/:id', verifyToken, downloadUserPDF);
 
 export default router;

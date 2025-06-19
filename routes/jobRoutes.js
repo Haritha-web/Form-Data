@@ -9,7 +9,7 @@ import {
 } from '../controllers/jobController.js';
 import { validateCreateJob, validateUpdateJob, deleteJobValidation, getJobsByEmployerValidation } from '../validations/jobValidations.js';
 import { applyToJob, getApplicantsForJob, getJobsAppliedByUser } from '../controllers/jobApplicationController.js';
-import { verifyUserToken, verifyEmployerToken } from '../middlewares/authMiddleware.js';
+import { verifyUserToken, verifyEmployerToken, verifyToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -21,9 +21,9 @@ router.get('/get-jobs-by-employer/:employerId', verifyEmployerToken, getJobsByEm
 
 router.post('/apply-job', verifyUserToken, applyToJob);
 router.get('/applied-jobs/:userId', verifyUserToken, getJobsAppliedByUser);
-router.get('/get-all-jobs', verifyUserToken, getAllJobs);         // Get all jobs
+router.get('/get-all-jobs', verifyToken, getAllJobs);         // Get all jobs
 
-router.get('/get-job/:id', verifyEmployerToken, getJobById);
+router.get('/get-job/:id', verifyToken, getJobById);
 router.get('/applicants/:jobId', getApplicantsForJob);
 
 export default router;
