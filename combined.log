@@ -1078,3 +1078,44 @@ info: Server started and running at 5000
 info: MongoDB Connected and running Successfully
 info: Server started and running at 5000
 info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: Error generating PDF: Cannot read properties of undefined (reading 'toISOString')
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: Error generating PDF: Cannot read properties of undefined (reading 'toISOString')
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: User Created: palavalliharitha@gmail.com
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: PDF downloaded for user: palavalliharitha@gmail.com
+error: Error generating PDF: Cannot read properties of undefined (reading 'toISOString')
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully

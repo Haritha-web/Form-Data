@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import User from '../models/User.js';
 import logger from '../utils/loggers.js';
 import ExcelJS from 'exceljs';
@@ -211,58 +210,81 @@ const downloadExcel = async (req, res) => {
 }
   }
 
- const downloadPDF = async (req, res) => {
-  const users = await User.find();
-  const doc = new PDFDocument();
+  const downloadPDF = async (req, res) => {
+  try {
+    const users = await User.find({ isDeleted: false });
+    const doc = new PDFDocument();
 
-  const filePath = './uploads/users.pdf';
-  doc.pipe(fs.createWriteStream(filePath));
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=users.pdf');
 
-  doc.fontSize(18).text('User List', { align: 'center' });
-  users.forEach(user => {
+    doc.pipe(res); // stream directly to response
+
+    doc.fontSize(18).text('User List', { align: 'center' });
     doc.moveDown();
 
-    // Example: Bold label, regular value
-    doc.font('Helvetica-Bold').fontSize(20).text('Name: ', { continued: true });
-    doc.font('Helvetica').text(`${user.firstName} ${user.lastName}`);
+    users.forEach(user => {
+      doc.moveDown().fontSize(12).text(`
+        Name: ${user.firstName ?? 'N/A'} ${user.lastName ?? ''}
+        Email: ${user.email ?? 'N/A'}
+        Mobile Number: ${user.mobile ?? 'N/A'}
+        Gender: ${user.gender ?? 'N/A'}
+        DOB: ${user.dob ? user.dob.toISOString().split('T')[0] : 'N/A'}
+        Location: (${user.lati ?? 'N/A'}, ${user.longi ?? 'N/A'})
+        Category: ${user.category ?? 'N/A'}
+        Experience Range: ${user.experienceRange ?? 'N/A'}
+        Key Skills: ${Array.isArray(user.keySkills) ? user.keySkills.join(', ') : 'N/A'}
+        Role: ${user.role ?? 'N/A'}
+        Current Designation: ${user.currentDesignation ?? 'N/A'}
+      `);
+    });
 
-    doc.moveDown().fontSize(24).text(`
-      Name: ${user.firstName} ${user.lastName}
-      Email: ${user.email}
-      Mobile Number: ${user.mobile}
-      Gender: ${user.gender}
-      DOB: ${user.dob.toISOString().split('T')[0]}
-      Location: (${user.lati}, ${user.longi})
-      Category: ${user.category}
-      Experience Range: ${user.experienceRange}
-      Key Skills: ${user.keySkills}
-      Role: ${user.role}
-      Current Designation: ${user.currentDesignation}
-    `);
-  });
-
-  doc.end();
-
-  doc.pipe(res);
+    doc.end();
+  } catch (error) {
+    logger.error(`Error generating PDF: ${error.message}`);
+    res.status(500).send({ message: 'Failed to generate PDF' });
+  }
 };
 
 const downloadUserPDF = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).send({ message: 'User not found' });
+    if (!user || user.isDeleted) {
+      return res.status(404).send({ message: 'User not found' });
+    }
 
-    const doc = new PDFDocument();
-    const fileName = `${user.firstName}_${user.lastName}_profile.pdf`;
+    const doc = new PDFDocument({ margin: 50 });
+    const fileName = `${user.firstName}_${user.lastName}_Profile.pdf`;
 
-    // Set headers first
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-
-    doc.pipe(res); // Stream directly to browser
+    doc.pipe(res);
 
     doc.fontSize(20).text('User Profile', { align: 'center' });
     doc.moveDown();
 
+    doc.fontSize(12);
+    doc.text(`Name: ${user.firstName ?? 'N/A'} ${user.lastName ?? ''}`);
+    doc.text(`Email: ${user.email ?? 'N/A'}`);
+    doc.text(`Mobile: ${user.mobile ?? 'N/A'}`);
+    doc.text(`Gender: ${user.gender ?? 'N/A'}`);
+    doc.text(`DOB: ${user.dob ? user.dob.toISOString().split('T')[0] : 'N/A'}`);
+    doc.text(`Location: (${user.lati ?? 'N/A'}, ${user.longi ?? 'N/A'})`);
+    doc.text(`Category: ${user.category ?? 'N/A'}`);
+    doc.text(`Experience Range: ${user.experienceRange ?? 'N/A'}`);
+    doc.text(`Key Skills: ${Array.isArray(user.keySkills) ? user.keySkills.join(', ') : 'N/A'}`);
+    doc.text(`Role: ${user.role ?? 'N/A'}`);
+    doc.text(`Current Designation: ${user.currentDesignation ?? 'N/A'}`);
+    doc.text(`Platform: ${user.platform ?? 'N/A'}`);
+    doc.text(`Model: ${user.model ?? 'N/A'}`);
+    doc.text(`OS Version: ${user.os_version ?? 'N/A'}`);
+
+    doc.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Failed to generate PDF' });
+  }
+};
     /* 
       // Insert image
     if (user.image) {
@@ -278,29 +300,7 @@ const downloadUserPDF = async (req, res) => {
       }
     }
     */
-
-    // Add user data
-    doc.fontSize(12).text(`Name: ${user.firstName} ${user.lastName}`);
-    doc.text(`Email: ${user.email}`);
-    doc.text(`Mobile: ${user.mobile}`);
-    doc.text(`Gender: ${user.gender}`);
-    doc.text(`DOB: ${user.dob.toISOString().split('T')[0]}`);
-    doc.text(`Latitude: ${user.lati}`);
-    doc.text(`Longitude: ${user.longi}`);
-    doc.text(`Experience Range: ${user.experienceRange}`);
-    doc.text(`Key Skills: ${user.keySkills.join(', ')}`);
-    doc.text(`Role: ${user.role}`);
-    doc.text(`Current Designation: ${user.currentDesignation}`);
-    
-    doc.end();
-
-    logger.info(`PDF downloaded for user: ${user.email}`);
-  } catch (error) {
-    logger.error(`Error generating PDF: ${error.message}`);
-    res.status(500).send({ message: 'Failed to generate PDF' });
-  }
-};
-
+   
 export {
     createUser,
     getUsers,
