@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import logger from '../utils/loggers.js';
 import ExcelJS from 'exceljs';

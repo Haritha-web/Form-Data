@@ -1119,3 +1119,10 @@ info: PDF downloaded for user: palavalliharitha@gmail.com
 error: Error generating PDF: Cannot read properties of undefined (reading 'toISOString')
 info: Server started and running at 5000
 info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: Get User by ID Error: mongoose is not defined
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
