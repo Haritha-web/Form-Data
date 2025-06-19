@@ -25,10 +25,10 @@ const uploadFields = upload.fields([
 router.post('/create', uploadFields, userSignupValidations, createUser);
 
 // Fetch All Users
-router.get('/get-all-users', verifyUserToken, getUsers);
+router.get('/get-all-users', getUsers);
 
 // Fetch Single User By Id
-router.get('/get-user/:id', verifyUserToken, getUserById);
+router.get('/get-user/:id', getUserById);
 
 // Update User
 router.put(
@@ -43,7 +43,7 @@ router.put(
 );
 
 // Delete User
-router.delete('/delete-user/:id', verifyUserToken, userDeleteValidations, deleteUser);
+router.delete('/delete-user/:id', userDeleteValidations, deleteUser);
 
 // Download Excel
 router.get('/download/excel', downloadExcel);
