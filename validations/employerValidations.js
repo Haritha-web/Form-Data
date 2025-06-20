@@ -92,26 +92,57 @@ const isValidObjectId = (value) => {
   return true;
 };
 
- const updateEmployerValidations = [
+const updateEmployerValidations = [
   // Validate ID
   param('id').custom(isValidObjectId),
 
   // Block email and password updates
-  body('email').not().exists().withMessage('Email cannot be updated'),
-  body('password').not().exists().withMessage('Password cannot be updated'),
+  body('email')
+    .not().exists()
+    .withMessage('Email cannot be updated'),
+  body('password')
+    .not().exists()
+    .withMessage('Password cannot be updated'),
 
   // Optional fields (validate if present)
-  body('firstName').optional().notEmpty().withMessage('First name cannot be empty'),
-  body('lastName').optional().notEmpty().withMessage('Last name cannot be empty'),
-  body('mobile').optional().isMobilePhone().withMessage('Valid mobile number required'),
-  body('gender').optional().notEmpty().withMessage('Gender cannot be empty'),
-  body('dob').optional().isISO8601().withMessage('Date of birth must be in ISO format (YYYY-MM-DD)'),
-  body('companyName').optional().notEmpty().withMessage('Company name cannot be empty'),
-
-  body('companyAddress.city').optional().notEmpty().withMessage('City cannot be empty'),
-  body('companyAddress.state').optional().notEmpty().withMessage('State cannot be empty'),
-  body('companyAddress.country').optional().notEmpty().withMessage('Country cannot be empty'),
-  body('companyAddress.pincode').optional().isPostalCode('IN').withMessage('Valid pincode required'),
+  body('firstName')
+    .optional()
+    .notEmpty()
+    .withMessage('First name cannot be empty'),
+  body('lastName')
+    .optional()
+    .notEmpty()
+    .withMessage('Last name cannot be empty'),
+  body('mobile')
+    .optional()
+    .isMobilePhone()
+    .withMessage('Valid mobile number required'),
+  body('gender')
+    .optional()
+    .notEmpty()
+    .withMessage('Gender cannot be empty'),
+  body('dob')
+    .optional()
+    .isISO8601()
+    .withMessage('Date of birth must be in ISO format (YYYY-MM-DD)'),
+  body('companyName')
+    .optional()
+    .notEmpty()
+    .withMessage('Company name cannot be empty'),
+  body('companyAddress.city')
+    .optional()
+    .notEmpty()
+    .withMessage('City cannot be empty'),
+  body('companyAddress.state')
+    .optional()
+    .notEmpty()
+    .withMessage('State cannot be empty'),
+  body('companyAddress.country')
+    .optional().notEmpty()
+    .withMessage('Country cannot be empty'),
+  body('companyAddress.pincode')
+    .optional().isPostalCode('IN')
+    .withMessage('Valid pincode required'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -145,8 +176,11 @@ const deleteEmployerValidations = [
 
 // Approve Employer Validation
 const approveEmployerValidations = [
-  param('id').custom(isValidObjectId),
-  body('action').isIn(['Approved', 'Rejected']).withMessage('Action must be Approved or Rejected'),
+  param('id')
+    .custom(isValidObjectId),
+  body('action')
+    .isIn(['Approved', 'Rejected'])
+    .withMessage('Action must be Approved or Rejected'),
   (req, res, next) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -163,7 +197,8 @@ const approveEmployerValidations = [
 
 // Get Users by Category Validation
 const usersByCategoryValidations = [
-  param('category').isIn(['Nurse', 'Plumber', 'Electrician', 'Office boy', 'House Keeping', 'HVAC Mevhanic'])
+  param('category')
+    .isIn(['Nurse', 'Plumber', 'Electrician', 'Office boy', 'House Keeping', 'HVAC Mevhanic'])
     .withMessage('Invalid category'),
     (req, res, next) => {
     const errors = validationResult(req);

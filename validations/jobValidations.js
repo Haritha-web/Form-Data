@@ -3,28 +3,43 @@ import mongoose from 'mongoose';
 
 // Create Job
 const validateCreateJob = [
-  body('jobTitle').notEmpty().withMessage('Job title is required'),
-  body('companyName').notEmpty().withMessage('Company name is required'),
-  body('location').notEmpty().withMessage('Location is required'),
+  body('jobTitle')
+    .notEmpty()
+    .withMessage('Job title is required'),
+  body('companyName')
+    .notEmpty()
+    .withMessage('Company name is required'),
+  body('location')
+    .notEmpty()
+    .withMessage('Location is required'),
   body('employmentType')
-    .notEmpty().withMessage('Employment type is required')
+    .notEmpty()
+    .withMessage('Employment type is required')
     .isIn(['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'])
     .withMessage('Invalid employment type'),
   body('jobDescription')
-    .notEmpty().withMessage('Job description is required'),
+    .notEmpty()
+    .withMessage('Job description is required'),
   body('skills')
-    .isArray({ min: 1 }).withMessage('At least one skill is required'),
+    .isArray({ min: 1 })
+    .withMessage('At least one skill is required'),
   body('experienceRequired')
-    .notEmpty().withMessage('Experience is required'),
-  body('education').notEmpty().withMessage('Education is required'),
+    .notEmpty()
+    .withMessage('Experience is required'),
+  body('education')
+    .notEmpty()
+    .withMessage('Education is required'),
   body('applyMode')
-    .notEmpty().withMessage('Apply mode is required')
+    .notEmpty()
+    .withMessage('Apply mode is required')
     .isIn(['Portal', 'Email', 'ExternalLink']),
   body('workMode')
-    .notEmpty().withMessage('Work mode is required')
+    .notEmpty()
+    .withMessage('Work mode is required')
     .isIn(['On-site', 'Remote', 'Hybrid']),
   body('numberOfOpenings')
-    .isInt({ min: 1 }).withMessage('Number of openings must be at least 1'),
+    .isInt({ min: 1 })
+    .withMessage('Number of openings must be at least 1'),
   async (req, res, next) => {
           const errors = validationResult(req);
           if(!errors.isEmpty()){

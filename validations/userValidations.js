@@ -233,7 +233,8 @@ const isValidObjectId = (value) => {
   return true;
 };
 const userDeleteValidations = [
-  param('id').custom(isValidObjectId),
+  param('id')
+    .custom(isValidObjectId),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
