@@ -23,7 +23,7 @@ router.post('/apply-job', verifyUserToken, applyToJob);
 router.get('/applied-jobs/:userId', verifyUserToken, getJobsAppliedByUser);
 router.get('/get-all-jobs', getAllJobs);         // Get all jobs
 
-router.get('/get-job/:id', verifyToken, getJobById);
+router.get('/get-job/:id', getJobById);
 router.get('/applicants/:jobId', getApplicantsForJob);
 
 export default router;
