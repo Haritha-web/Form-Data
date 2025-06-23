@@ -72,8 +72,37 @@ const getJobsAppliedByUser = async (req, res) => {
   }
 };
 
+const checkIfUserAppliedToJob = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { userId } = req.body;
+
+    if (!jobId || !userId) {
+      return res.status(400).send({ message: 'Job ID and User ID are required' });
+    }
+
+    const alreadyApplied = await JobApplication.findOne({ job: jobId, user: userId });
+
+    if (alreadyApplied) {
+      return res.status(200).send({
+        applied: true,
+        message: 'User has already applied for this job',
+      });
+    } else {
+      return res.status(200).send({
+        applied: false,
+        message: 'User has not applied for this job yet',
+      });
+    }
+  } catch (error) {
+    console.error('Job Apply Check Error:', error);
+    res.status(500).send({ message: 'Server error while checking job application status' });
+  }
+};
+
 export {
     applyToJob,
     getApplicantsForJob,
-    getJobsAppliedByUser
+    getJobsAppliedByUser,
+    checkIfUserAppliedToJob
 };
