@@ -17,7 +17,7 @@ const loginApi = async (req, res) => {
       if (!match) return res.status(401).json({ message: 'Invalid password' });
 
       const token = jwt.sign({ id: person._id, role: 'superadmin' }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
+        expiresIn: '1h',
       });
       return res.status(200).json({ message: 'Login successful', token, role: 'superadmin' });
     }

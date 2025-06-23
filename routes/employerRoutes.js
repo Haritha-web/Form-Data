@@ -21,7 +21,7 @@ router.put('/update-employer/:id', verifyEmployerToken, updateEmployerValidation
 router.delete('/delete-employer/:id', verifyEmployerToken, deleteEmployerValidations, deleteEmployer);
 
 // Approved Employer by Super Admin
-router.put('/approve/:id', verifyEmployerToken, approveEmployerValidations, approveEmployer);
+router.put('/approve/:id', approveEmployerValidations, approveEmployer);
 
 // GET users by category (accessible only by logged-in Employer)
 router.get('/users/:category', verifyEmployerToken, usersByCategoryValidations, verifyEmployerToken, usersByCategory);

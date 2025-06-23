@@ -1,3 +1,6 @@
+import path from 'path';
+import nodemailer from 'nodemailer';
+import ejs from 'ejs';
 import mongoose from 'mongoose';
 import Employer from '../models/Employer.js';
 import User from '../models/User.js';
@@ -157,11 +160,36 @@ const approveEmployer = async (req, res) => {
     employer.isApproved = action;
     await employer.save();
 
-    res.send({ message: `Employer ${action.toLowerCase() } successfully` });
+    // Render email template
+    const templatePath = path.join(process.cwd(), 'templates', 'employerApprovalTemplate.ejs');
+    const html = await ejs.renderFile(templatePath, {
+      firstName: employer.firstName,
+      status: action
+    });
+
+    // Setup Transporter
+    const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+
+    // Send email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: employer.email,
+      subject: `Your Employer Account is ${action}`,
+      html
+    });
+
+    res.send({ message: `Employer ${action.toLowerCase()} successfully` });
   } catch (err) {
     res.status(500).send({ message: 'Error updating employer status', error: err.message });
   }
 };
+
 
 const usersByCategory = async (req, res) => {
   try{
