@@ -17,7 +17,11 @@ const verifyToken = async (req, res, next) => {
       const user = await User.findById(decoded.id);
       if (!user) return res.status(404).json({ message: 'User not found' });
       req.user = { id: user._id, role: user.role };
-    } else if (decoded.role === 'employer' || decoded.role === 'superadmin') {
+    } else if (decoded.role === 'superadmin') {
+      // ✅ Skip Employer DB check for superadmin
+      req.employer = { id: decoded.id, role: decoded.role };
+      return next();
+    } else if (decoded.role === 'employer') {
       const employer = await Employer.findById(decoded.id);
       if (!employer) return res.status(404).json({ message: 'Employer not found' });
       req.employer = { id: employer._id, role: employer.role };
@@ -72,7 +76,7 @@ const verifyEmployerToken = async (req, res, next) => {
 
     if (decoded.role === 'superadmin') {
       req.employer = { id: decoded.id, role: decoded.role };
-      return next();
+      return next(); // ✅ Allow superadmin directly
     }
 
     if (decoded.role !== 'employer') {
