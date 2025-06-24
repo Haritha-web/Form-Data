@@ -1,4 +1,7 @@
-// controllers/jobApplicationController.js
+import path from 'path';
+import ejs from 'ejs';
+import nodemailer from 'nodemailer';
+import User from '../models/User.js';
 import Job from '../models/Job.js';
 import JobApplication from '../models/JobApplication.js';
 
@@ -21,6 +24,36 @@ const applyToJob = async (req, res) => {
     });
 
     await application.save();
+
+    const user = await User.findById(userId);
+    if (!user) 
+      return res.status(404).send({message: 'User not found'});
+
+    // Render email template
+    const templatePath = path.join(process.cwd(), 'templates', 'jobApplicationConfirmationTemplate.ejs');
+    const html = await ejs.renderFile(templatePath, {
+      firstName: user.firstName,
+      jobTitle: job.title,
+      companyName: job.companyName || 'Our Company'
+    });
+    
+    // Setup Transporter
+    const transporter = nodemailer.createTransport({
+    service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+    
+    // Send email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: `Application Received: ${job.title}`,
+      html
+    });
+
     res.status(201).send({ message: 'Applied to job successfully', application });
   } catch (error) {
     res.status(500).send({ message: 'Error applying to job', error: error.message });
