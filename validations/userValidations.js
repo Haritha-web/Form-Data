@@ -145,6 +145,7 @@ const userUpdateValidations = [
     .withMessage('Invalid phone number. Must be 10 digits starting with 6.'),
 
   body('gender')
+    .optional()
     .isIn(['Male', 'Female', 'Other'])
     .withMessage('Invalid gender'),
 
