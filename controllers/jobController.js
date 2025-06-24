@@ -162,11 +162,54 @@ const getJobsByEmployer = async (req, res) => {
   }
 };
 
+const filterJobs = async (req, res) => {
+  try {
+    const { skill, location, experience,  employmentType, workMode } = req.query;
+
+    const filter = {
+      isDeleted: false,
+    };
+
+    // Add dynamic filters
+    if (skill) {
+      filter.skills = { $regex: new RegExp(skill, 'i') }; // Case-insensitive match
+    }
+
+    if (location) {
+      filter.location = { $regex: new RegExp(location, 'i') };
+    }
+
+    if (experience) {
+      filter.experienceRequired = { $lte: Number(experience) }; // Jobs requiring less or equal experience
+    }
+
+    if (employmentType) {
+      filter.employmentType = { $regex: new RegExp(employmentType, 'i') };
+    }
+
+    if (workMode) {
+      filter.workMode = { $regex: new RegExp(workMode, 'i') };
+    }
+
+    const jobs = await Job.find(filter).sort({ createdAt: -1 });
+
+    if (jobs.length === 0) {
+      return res.status(404).send({ message: 'No jobs found matching criteria' });
+    }
+
+    res.status(200).send({ total: jobs.length, jobs });
+  } catch (error) {
+    logger.error('Filter Jobs Error: ' + error.message);
+    res.status(500).send({ error: 'Failed to filter jobs' });
+  }
+};
+
 export {
   createJob,
   getAllJobs,
   getJobById,
   updateJob,
   deleteJob,
-  getJobsByEmployer
+  getJobsByEmployer,
+  filterJobs
 };

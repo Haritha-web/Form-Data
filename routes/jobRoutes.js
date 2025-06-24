@@ -5,7 +5,8 @@ import {
   getAllJobs,
   updateJob,
   deleteJob,
-  getJobsByEmployer
+  getJobsByEmployer,
+  filterJobs
 } from '../controllers/jobController.js';
 import { validateCreateJob, validateUpdateJob, deleteJobValidation, getJobsByEmployerValidation } from '../validations/jobValidations.js';
 import { applyToJob, getApplicantsForJob, getJobsAppliedByUser, checkIfUserAppliedToJob } from '../controllers/jobApplicationController.js';
@@ -23,6 +24,7 @@ router.post('/apply-job', verifyUserToken, applyToJob);
 router.get('/applied-jobs/:userId', verifyUserToken, getJobsAppliedByUser);
 router.get('/get-all-jobs', getAllJobs);         // Get all jobs
 router.post('/check-applied-jobs/:jobId', verifyUserToken, checkIfUserAppliedToJob);
+router.get('/filter-jobs', verifyUserToken, filterJobs);
 
 router.get('/get-job/:id', getJobById);
 router.get('/applicants/:jobId', verifyToken, getApplicantsForJob);
