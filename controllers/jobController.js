@@ -164,45 +164,42 @@ const getJobsByEmployer = async (req, res) => {
 
 const filterJobs = async (req, res) => {
   try {
-    const { skill, location, experience,  employmentType, workMode } = req.query;
+    const { search } = req.query;
 
-    const filter = {
+    const matchStage = {
       isDeleted: false,
     };
 
-    // Add dynamic filters
-    if (skill) {
-      filter.skills = { $regex: new RegExp(skill, 'i') }; // Case-insensitive match
+    const pipeline = [];
+
+    if (search) {
+      const regex = new RegExp(search, 'i'); // case-insensitive match
+      matchStage.$or = [
+        { jobTitle: { $regex: regex } },
+        { companyName: { $regex: regex } },
+        { location: { $regex: regex } },
+        { employmentType: { $regex: regex } },
+        { workMode: { $regex: regex } },
+        { skills: { $in: [search] } }
+      ];
     }
 
-    if (location) {
-      filter.location = { $regex: new RegExp(location, 'i') };
-    }
+    pipeline.push({ $match: matchStage });
+    pipeline.push({ $sort: { createdAt: -1 } });
 
-    if (experience) {
-      filter.experienceRequired = { $lte: Number(experience) }; // Jobs requiring less or equal experience
-    }
-
-    if (employmentType) {
-      filter.employmentType = { $regex: new RegExp(employmentType, 'i') };
-    }
-
-    if (workMode) {
-      filter.workMode = { $regex: new RegExp(workMode, 'i') };
-    }
-
-    const jobs = await Job.find(filter).sort({ createdAt: -1 });
+    const jobs = await Job.aggregate(pipeline);
 
     if (jobs.length === 0) {
-      return res.status(404).send({ message: 'No jobs found matching criteria' });
+      return res.status(404).send({ message: 'No jobs found matching your search' });
     }
 
     res.status(200).send({ total: jobs.length, jobs });
   } catch (error) {
-    logger.error('Filter Jobs Error: ' + error.message);
-    res.status(500).send({ error: 'Failed to filter jobs' });
+    logger.error('Aggregation Search Error: ' + error.message);
+    res.status(500).send({ error: 'Failed to search jobs using aggregation' });
   }
 };
+
 
 export {
   createJob,

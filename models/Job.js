@@ -29,6 +29,7 @@ const jobSchema = new mongoose.Schema(
     },
     experienceRequired: { 
         type: String, 
+        enum: ['0-1', '1-2', '2-3', '4-5', '5+'],
         required: true 
     },
     education: { 
