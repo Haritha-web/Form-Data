@@ -43,6 +43,27 @@ const userSchema = new mongoose.Schema({
   resume: {
     type: String,
 },
+location: {
+    type: String,
+  },
+  languagesKnown: [{
+    type: String
+  }],
+  expectedSalary: {
+    type: Number,
+  },
+  currentSalary: {
+    type: Number,
+  },
+  education: [
+    {
+      courseName: String,
+      specialization: String,
+      collegeName: String,
+      startYear: Number,
+      endYear: Number
+    }
+  ],
 category: {
   type: String,
   required: true,

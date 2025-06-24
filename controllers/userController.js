@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import PDFDocument from 'pdfkit';
 
 const createUser = async (req, res) => {
-  const { firstName, lastName, email, password, mobile, gender, dob, lati, longi, category, experienceRange, keySkills, role, currentDesignation, platform, model, os_version } = req.body;
+  const { firstName, lastName, email, password, mobile, gender, dob, lati, longi, category, location, currentSalary, expectedSalary, languagesKnown,education,  experienceRange, keySkills, role, currentDesignation, platform, model, os_version } = req.body;
 
   try {
     const emailExists = await User.findOne({ email });
@@ -39,6 +39,11 @@ const createUser = async (req, res) => {
         image: imageUrl,
         resume: resumeUrl,
         category,
+        location,
+        expectedSalary,
+        currentSalary,
+        languagesKnown,
+        education,
         experienceRange,
         keySkills,
         role,
@@ -100,6 +105,11 @@ const updateUser = async (req, res) => {
     lati,
     longi,
     category,
+    location,
+    languagesKnown,
+    expectedSalary,
+    currentSalary,
+    education,
     experienceRange,
     keySkills,
     role,
@@ -134,6 +144,11 @@ const updateUser = async (req, res) => {
     user.lati = lati ?? user.lati;
     user.longi = longi ?? user.longi;
     user.category = category ?? user.category;
+    user.location = location ?? user.location;
+    user.languagesKnown = languagesKnown ?? user.languagesKnown;
+    user.expectedSalary = expectedSalary ?? user.expectedSalary;
+    user.currentSalary = currentSalary ?? user.currentSalary;
+    user.education = education ?? user.education;
     user.experienceRange = experienceRange ?? user.experienceRange;
     user.keySkills = keySkills ?? user.keySkills;
     user.role = role ?? user.role;
@@ -191,7 +206,12 @@ const downloadExcel = async (req, res) => {
     { header: 'Latitude', key: 'lati' },
     { header: 'Longitude', key: 'longi' },
     { header: 'Image Path', key: 'image' },
-    { header: 'Category', key: 'category'},
+    { header: 'Category', key: 'category' },
+    { header: 'Location', key: 'location' },
+    { header: 'Languages Known', key:'languagesKnown'},
+    { header: 'Expected Salary', key:'expectedSalary' },
+    { header: 'Current Salary', key: 'currentSalary' },
+    { header: 'Educational Details', key: 'education' },
     { header: 'Experience Range', key: 'experienceRange' },
     { header: 'Key Skills', key: 'keySkills' },
     { header: 'Role', key: 'role' },
@@ -230,8 +250,12 @@ const downloadExcel = async (req, res) => {
         Mobile Number: ${user.mobile ?? 'N/A'}
         Gender: ${user.gender ?? 'N/A'}
         DOB: ${user.dob ? user.dob.toISOString().split('T')[0] : 'N/A'}
-        Location: (${user.lati ?? 'N/A'}, ${user.longi ?? 'N/A'})
+        Location: (${user.lati ?? 'N/A'}, ${user.longi ?? 'N/A'}, ${user.location ?? 'N/A'})
         Category: ${user.category ?? 'N/A'}
+        Expected Salary: ${user.expectedSalary ?? 'N/A'}
+        Current Salary: ${user.currentSalary ?? 'N/A'}
+        Languages Known: ${Array.isArray(user.languagesKnown) ? user.languagesKnown.join(', ') : 'N/A'}
+        Educational Details: ${Array.isArray(user.education) ? user.education.join(', ') : 'N/A'}
         Experience Range: ${user.experienceRange ?? 'N/A'}
         Key Skills: ${Array.isArray(user.keySkills) ? user.keySkills.join(', ') : 'N/A'}
         Role: ${user.role ?? 'N/A'}

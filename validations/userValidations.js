@@ -64,6 +64,33 @@ const userSignupValidations = [
     .isFloat({ min: -180, max: 180 })
     .withMessage('Longitude must be valid'),
     
+  body('expectedSalary')
+    .optional()
+    .isNumeric().withMessage('Expected salary must be a number'),
+
+  body('currentSalary')
+    .optional()
+    .isNumeric().withMessage('Current salary must be a number'),
+
+  body('languagesKnown')
+    .optional()
+    .isArray().withMessage('Languages must be an array of strings'),
+
+  body('education')
+    .optional()
+    .isArray().withMessage('Education must be an array'),
+  
+  body('location')
+    .optional()
+    .isString()
+    .withMessage("Locatio must be string"),
+    
+  body('education.*.courseName').optional().isString(),
+  body('education.*.specialization').optional().isString(),
+  body('education.*.collegeName').optional().isString(),
+  body('education.*.startYear').optional().isNumeric(),
+  body('education.*.endYear').optional().isNumeric(),
+
   body('category')
     .notEmpty()
     .withMessage('Category is required')
