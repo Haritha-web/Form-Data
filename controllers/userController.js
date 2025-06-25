@@ -324,6 +324,68 @@ const downloadUserPDF = async (req, res) => {
       }
     }
     */
+
+// POST /bookmark-job/:jobId
+const bookmarkJob = async (req, res) => {
+  const userId = req.user.id; // assumes token middleware sets req.user
+  const { jobId } = req.params;
+
+  if (!userId) return res.status(401).send({ message: 'Unauthorized' });
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).send({ message: 'User not found' });
+
+    if (user.bookmarkedJobs.includes(jobId)) {
+      return res.status(400).send({ message: 'Job already bookmarked' });
+    }
+
+    user.bookmarkedJobs.push(jobId);
+    await user.save();
+
+    res.status(200).send({ message: 'Job bookmarked successfully' });
+  } catch (error) {
+    res.status(500).send({ message: 'Error bookmarking job', error: error.message });
+  }
+};
+
+// GET /bookmarked-jobs
+const getBookmarkedJobs = async (req, res) => {
+  const userId = req.user.id;
+
+  if (!userId) return res.status(401).send({ message: 'Unauthorized' });
+
+  try {
+    const user = await User.findById(userId).populate('bookmarkedJobs');
+    if (!user) return res.status(404).send({ message: 'User not found' });
+
+    res.status(200).send(user.bookmarkedJobs);
+  } catch (error) {
+    res.status(500).send({ message: 'Error fetching bookmarks', error: error.message });
+  }
+};
+
+// DELETE /remove-bookmark/:jobId
+const removeBookmarkedJob = async (req, res) => {
+  const userId = req.user.id;
+  const { jobId } = req.params;
+
+  if(!userId) return res.status(401).send({ message: 'Unauthorized' });
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).send({ message: 'User not found' });
+
+    user.bookmarkedJobs = user.bookmarkedJobs.filter(
+      (id) => id.toString() !== jobId
+    );
+    await user.save();
+
+    res.status(200).send({ message: 'Bookmark removed successfully' });
+  } catch (error) {
+    res.status(500).send({ message: 'Error removing bookmark', error: error.message });
+  }
+};
    
 export {
     createUser,
@@ -333,5 +395,8 @@ export {
     deleteUser,
     downloadExcel,
     downloadPDF,
-    downloadUserPDF
+    downloadUserPDF,
+    bookmarkJob,
+    getBookmarkedJobs,
+    removeBookmarkedJob
 };

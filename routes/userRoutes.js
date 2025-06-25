@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createUser, getUsers, getUserById, updateUser, deleteUser, downloadExcel, downloadPDF, downloadUserPDF } from '../controllers/userController.js';
+import { createUser, getUsers, getUserById, updateUser, deleteUser, downloadExcel, downloadPDF, downloadUserPDF, bookmarkJob, getBookmarkedJobs, removeBookmarkedJob } from '../controllers/userController.js';
 import { userSignupValidations, userUpdateValidations, userDeleteValidations } from '../validations/userValidations.js';
 import { verifyToken, verifyUserToken } from '../middlewares/authMiddleware.js';
 
@@ -51,5 +51,10 @@ router.get('/download/excel', verifyToken, downloadExcel);
 // Download PDF
 router.get('/download/pdf', verifyToken, downloadPDF);
 router.get('/download/pdf/:id', verifyToken, downloadUserPDF);
+
+// Bookmark Jobs
+router.post('/bookmark-job/:jobId', verifyUserToken, bookmarkJob);
+router.get('/get-bookmarked-jobs', verifyUserToken, getBookmarkedJobs);
+router.delete('/remove-bookmarked-job/:jobId', verifyUserToken, removeBookmarkedJob);
 
 export default router;

@@ -100,7 +100,11 @@ otpExpire: {
 isDeleted: {
   type: Boolean,
   default: false
-}
+},
+bookmarkedJobs: [{ 
+  type: mongoose.Schema.Types.ObjectId, 
+  ref: 'Job'
+}],
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);
