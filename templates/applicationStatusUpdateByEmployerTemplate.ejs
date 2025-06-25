@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Application Status Update</title>
+  </head>
+  <body>
+    <p>Hi <%= firstName %>,</p>
+
+    <p>Your application for the job role <strong><%= jobTitle %></strong> at <strong><%= companyName %></strong> has been <strong><%= newStatus %></strong>.</p>
+
+    <% if (newStatus === 'Selected') { %>
+      <p>Congratulations! You have been shortlisted for the next round. We'll contact you soon with further steps.</p>
+    <% } else { %>
+      <p>We appreciate your interest, but you have not been selected at this time.</p>
+    <% } %>
+
+    <p>Regards,<br/>Recruitment Team</p>
+  </body>
+</html>
