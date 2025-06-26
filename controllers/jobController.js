@@ -55,11 +55,40 @@ const createJob = async (req, res) => {
   }
 };
 
-// Get All Jobs (Only non-deleted)
 const getAllJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({ isDeleted: false }).sort({ createdAt: -1 });
-    res.status(200).send(jobs);
+    const { timeframe } = req.query;
+    let matchCriteria = { isDeleted: false };
+    let dateFilterApplied = false;
+
+    if (timeframe && timeframe !== 'all') {
+      const now = new Date();
+      let pastDate;
+
+      if (timeframe === '24hours') {
+        pastDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        dateFilterApplied = true;
+      } else if (timeframe === '3days') {
+        pastDate = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+        dateFilterApplied = true;
+      } else if (timeframe === '7days') {
+        pastDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        dateFilterApplied = true;
+      }
+
+      if (dateFilterApplied) {
+        matchCriteria.createdAt = { $gte: pastDate };
+      }
+    }
+
+    let jobs = await Job.find(matchCriteria).sort({ createdAt: -1 });
+
+    // If no jobs found and filter applied, fallback to all jobs
+    if (dateFilterApplied && jobs.length === 0) {
+      jobs = await Job.find({ isDeleted: false }).sort({ createdAt: -1 });
+    }
+
+    res.status(200).send({ total: jobs.length, jobs });
   } catch (error) {
     logger.error('Get All Jobs Error: ' + error.message);
     res.status(500).send({ error: 'Failed to fetch jobs' });
@@ -74,27 +103,50 @@ const getAllJobsWithToken = async (req, res) => {
       return res.status(401).send({ error: 'Unauthorized: No user token provided' });
     }
 
-    // Get user details along with bookmarks
     const user = await User.findById(userId).select('bookmarkedJobs');
-
     if (!user) {
       return res.status(404).send({ error: 'User not found' });
     }
 
-    // Convert bookmarked job IDs to string for easy comparison
     const bookmarkedJobIds = user.bookmarkedJobs.map(id => id.toString());
 
-    // Get all non-deleted jobs
-    const jobs = await Job.find({ isDeleted: false }).sort({ createdAt: -1 });
+    const { timeframe } = req.query;
+    let matchCriteria = { isDeleted: false };
+    let dateFilterApplied = false;
 
-    // Add isBookmarked property to each job
+    if (timeframe && timeframe !== 'all') {
+      const now = new Date();
+      let pastDate;
+
+      if (timeframe === '24hours') {
+        pastDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        dateFilterApplied = true;
+      } else if (timeframe === '3days') {
+        pastDate = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+        dateFilterApplied = true;
+      } else if (timeframe === '7days') {
+        pastDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        dateFilterApplied = true;
+      }
+
+      if (dateFilterApplied) {
+        matchCriteria.createdAt = { $gte: pastDate };
+      }
+    }
+
+    let jobs = await Job.find(matchCriteria).sort({ createdAt: -1 });
+
+    // Fallback if filtered jobs are 0 but filter was applied
+    if (dateFilterApplied && jobs.length === 0) {
+      jobs = await Job.find({ isDeleted: false }).sort({ createdAt: -1 });
+    }
+
     const jobsWithBookmarkFlag = jobs.map(job => ({
       ...job.toObject(),
       isBookmarked: bookmarkedJobIds.includes(job._id.toString()),
     }));
 
     res.status(200).send({ total: jobs.length, jobs: jobsWithBookmarkFlag });
-
   } catch (error) {
     logger.error('Get All Jobs With Token Error: ' + error.message);
     res.status(500).send({ error: 'Failed to fetch jobs with bookmark info' });
