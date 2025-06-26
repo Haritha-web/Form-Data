@@ -26,7 +26,7 @@ router.post('/apply-job', verifyUserToken, applyToJob);
 router.get('/applied-jobs/:userId', verifyUserToken, getJobsAppliedByUser);
 router.get('/get-all-jobs', getAllJobs);         // Get all jobs
 router.post('/check-applied-jobs/:jobId', verifyUserToken, checkIfUserAppliedToJob);
-router.get('/filter-jobs', verifyUserToken, filterJobs);
+router.get('/filter-jobs', filterJobs);
 router.get('/get-all-jobs/with-token', verifyUserToken, getAllJobsWithToken);
 
 router.get('/get-job/:id', getJobById);

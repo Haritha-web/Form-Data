@@ -215,6 +215,7 @@ const filterJobs = async (req, res) => {
         { companyName: { $regex: regex } },
         { location: { $regex: regex } },
         { employmentType: { $regex: regex } },
+        { experienceRequired: { $regex: regex} },
         { workMode: { $regex: regex } },
         { skills: { $in: [search] } }
       ];
