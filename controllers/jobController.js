@@ -54,26 +54,11 @@ const createJob = async (req, res) => {
   }
 };
 
+// Get All Jobs (Only non-deleted)
 const getAllJobs = async (req, res) => {
   try {
-    const userId = req.user?.id; // user should be authenticated
-    let bookmarkedJobIds = [];
-
-    if (userId) {
-      const user = await User.findById(userId).select('bookmarkedJobs');
-      bookmarkedJobIds = user?.bookmarkedJobs?.map(id => id.toString()) || [];
-    }
-
     const jobs = await Job.find({ isDeleted: false }).sort({ createdAt: -1 });
-
-    // Add `bookmark` status to each job
-    const jobsWithBookmark = jobs.map(job => {
-      const jobObj = job.toObject();
-      jobObj.bookmark = bookmarkedJobIds.includes(job._id.toString());
-      return jobObj;
-    });
-
-    res.status(200).send({ total: jobsWithBookmark.length, jobs: jobsWithBookmark });
+    res.status(200).send(jobs);
   } catch (error) {
     logger.error('Get All Jobs Error: ' + error.message);
     res.status(500).send({ error: 'Failed to fetch jobs' });
