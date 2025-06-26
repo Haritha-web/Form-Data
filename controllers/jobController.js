@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import User from '../models/User.js';
 import Job from '../models/Job.js';
 import logger from '../utils/loggers.js';
 
@@ -62,6 +63,41 @@ const getAllJobs = async (req, res) => {
   } catch (error) {
     logger.error('Get All Jobs Error: ' + error.message);
     res.status(500).send({ error: 'Failed to fetch jobs' });
+  }
+};
+
+const getAllJobsWithToken = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).send({ error: 'Unauthorized: No user token provided' });
+    }
+
+    // Get user details along with bookmarks
+    const user = await User.findById(userId).select('bookmarkedJobs');
+
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+
+    // Convert bookmarked job IDs to string for easy comparison
+    const bookmarkedJobIds = user.bookmarkedJobs.map(id => id.toString());
+
+    // Get all non-deleted jobs
+    const jobs = await Job.find({ isDeleted: false }).sort({ createdAt: -1 });
+
+    // Add isBookmarked property to each job
+    const jobsWithBookmarkFlag = jobs.map(job => ({
+      ...job.toObject(),
+      isBookmarked: bookmarkedJobIds.includes(job._id.toString()),
+    }));
+
+    res.status(200).send({ total: jobs.length, jobs: jobsWithBookmarkFlag });
+
+  } catch (error) {
+    logger.error('Get All Jobs With Token Error: ' + error.message);
+    res.status(500).send({ error: 'Failed to fetch jobs with bookmark info' });
   }
 };
 
@@ -204,6 +240,7 @@ const filterJobs = async (req, res) => {
 export {
   createJob,
   getAllJobs,
+  getAllJobsWithToken,
   getJobById,
   updateJob,
   deleteJob,
