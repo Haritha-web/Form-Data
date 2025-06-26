@@ -28,6 +28,6 @@ router.post('/check-applied-jobs/:jobId', verifyUserToken, checkIfUserAppliedToJ
 router.get('/filter-jobs', verifyUserToken, filterJobs);
 
 router.get('/get-job/:id', getJobById);
-router.get('/applicants/:jobId', verifyToken, getApplicantsForJob);
+router.get('/applicants/:jobId', verifyEmployerToken, getApplicantsForJob);
 
 export default router;
