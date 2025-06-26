@@ -17,7 +17,7 @@ const app = express();
 // ✅ Enable CORS
 app.use(cors({
     origin: '*', // Or specify allowed domains: ['https://yourdomain.com']
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
