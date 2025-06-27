@@ -261,15 +261,16 @@ const filterJobs = async (req, res) => {
     const pipeline = [];
 
     if (search) {
-      const regex = new RegExp(search, 'i'); // case-insensitive match
+      const keywords = search.split(',').map(item => item.trim()).filter(Boolean);
+      const regexes = keywords.map(k => new RegExp(k, 'i')); // Array of case-sensitive regex
       matchStage.$or = [
-        { jobTitle: { $regex: regex } },
-        { companyName: { $regex: regex } },
-        { location: { $regex: regex } },
-        { employmentType: { $regex: regex } },
-        { experienceRequired: { $regex: regex} },
-        { workMode: { $regex: regex } },
-        { skills: { $in: [search] } }
+        { jobTitle: { $in: regexes } },
+        { companyName: { $in: regexes } },
+        { location: { $in: regexes } },
+        { employmentType: { $in: regexes } },
+        { experienceRequired: { $in: regexes} },
+        { workMode: { $in: regexes } },
+        { skills: { $in: keywords } }
       ];
     }
 

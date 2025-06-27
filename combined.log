@@ -1391,3 +1391,12 @@ info: Server started and running at 5000
 info: MongoDB Connected and running Successfully
 info: Server started and running at 5000
 info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+error: Aggregation Search Error: $regex has to be a string
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
+info: Server started and running at 5000
+info: MongoDB Connected and running Successfully
